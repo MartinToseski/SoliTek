@@ -24,7 +24,6 @@ def generate_rings(boundary, inner_d, outer_d, spacing, edge_margin):
     maxx -= edge_margin
     maxy -= edge_margin
 
-    # 🔥 FIX: no centering
     start_x = minx + outer_d / 2
     start_y = miny + outer_d / 2
 

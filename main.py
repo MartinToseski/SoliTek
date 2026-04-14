@@ -1,11 +1,7 @@
 from shapely.geometry import Point, box
-from config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS, FINGERS_PER_RING
+from config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS, FINGERS_PER_RING, OUTER_DIAMETER, INNER_DIAMETER
 from geometry import generate_rings
 from export import export_dxf
-
-
-OUTER_DIAMETER = 37.46
-INNER_DIAMETER = 33.26
 
 
 if __name__ == '__main__':
