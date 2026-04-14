@@ -22,9 +22,9 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
     else:
         dimstyle = doc.dimstyles.get("EZ_DIM")
 
-    # 🔥 FIX: enforce precision
-    dimstyle.dxf.dimdec = 4   # 4 decimal places
-    dimstyle.dxf.dimzin = 0   # do NOT suppress trailing zeros
+    # 🔥 Precision fix
+    dimstyle.dxf.dimdec = 4
+    dimstyle.dxf.dimzin = 0
 
     # ===== LINETYPE =====
     if "DASHED" not in doc.linetypes:
@@ -47,7 +47,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
         dxfattribs={"layer": "WAFER"}
     )
 
-    # ---- Wafer size ----
+    # ---- Wafer width ----
     msp.add_linear_dim(
         base=(minx, miny - OFFSET),
         p1=(minx, miny),
@@ -76,6 +76,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
             msp.add_circle(center, r_outer, dxfattribs={"layer": "FINGERS"})
             msp.add_circle(center, r_inner, dxfattribs={"layer": "FINGERS"})
 
+        # ===== DIMENSIONS (ONLY FIRST RING = bottom-left) =====
         if i == 0:
 
             # ---- LEFT edge margin ----
@@ -89,13 +90,14 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- TOP edge margin ----
-            ring_top = cy + outer_diameter / 2
+            # ---- BOTTOM edge margin ----
+            ring_bottom = cy - outer_diameter / 2
 
             msp.add_linear_dim(
-                base=(cx, maxy + OFFSET),
-                p1=(cx, maxy),
-                p2=(cx, ring_top),
+                base=(cx, miny - OFFSET - 20),  # shifted down to avoid overlap
+                p1=(cx, miny),
+                p2=(cx, ring_bottom),
+                angle=90,
                 dimstyle="EZ_DIM",
                 dxfattribs={"layer": "DIMS"}
             ).render()
@@ -125,7 +127,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
                 inner_r1 = r1 - FINGER_THICKNESS
 
                 msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 20),
+                    base=(cx, maxy + OFFSET),
                     p1=(cx + inner_r1, cy),
                     p2=(cx + r2, cy),
                     dimstyle="EZ_DIM",
@@ -139,7 +141,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
                 r_outer = outer_diameter / 2
 
                 msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 40),
+                    base=(cx, maxy + OFFSET + 20),
                     p1=(cx + r_outer, cy),
                     p2=(cx2 - r_outer, cy2),
                     dimstyle="EZ_DIM",
@@ -151,14 +153,14 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
                 r = finger_radii[0]
 
                 msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 60),
+                    base=(cx, maxy + OFFSET + 40),
                     p1=(cx + r, cy),
                     p2=(cx + r - FINGER_THICKNESS, cy),
                     dimstyle="EZ_DIM",
                     dxfattribs={"layer": "DIMS"}
                 ).render()
 
-    # ===== CONSTANTS PANEL (4-decimal formatting) =====
+    # ===== CONSTANTS PANEL =====
     text_x = maxx + 60
     text_y = maxy
 
@@ -181,4 +183,4 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
         txt.dxf.insert = (text_x, text_y - i * 5)
 
     doc.saveas("wafer_layout.dxf")
-    print("DXF file saved!")
+    print("DXF file saved")
