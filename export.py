@@ -1,13 +1,6 @@
 import ezdxf
 from geometry import create_fingers
-from config import (
-    WAFER_SIZE,
-    RING_SPACING,
-    EDGE_MARGIN,
-    FINGER_THICKNESS,
-    FINGER_SPACING,
-    FINGER_TO_RING
-)
+from config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
 
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter):
@@ -16,7 +9,6 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
 
     msp = doc.modelspace()
 
-    # ===== DIM STYLE =====
     if "EZ_DIM" not in doc.dimstyles:
         dimstyle = doc.dimstyles.new("EZ_DIM")
     else:
@@ -94,7 +86,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
             ring_bottom = cy - outer_diameter / 2
 
             msp.add_linear_dim(
-                base=(cx, miny - OFFSET - 20),  # shifted down to avoid overlap
+                base=(cx, miny - OFFSET - 20),
                 p1=(cx, miny),
                 p2=(cx, ring_bottom),
                 angle=90,

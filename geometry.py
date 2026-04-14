@@ -5,7 +5,6 @@ from config import FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS
 def create_ring(center, inner_d, outer_d):
     outer = Point(center).buffer(outer_d / 2.0, resolution=128)
     inner = Point(center).buffer(inner_d / 2.0, resolution=128)
-
     return outer.difference(inner), outer
 
 
