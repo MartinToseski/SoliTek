@@ -1,5 +1,5 @@
-from shapely.geometry import Point, box
-from config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS, FINGERS_PER_RING
+from shapely.geometry import Point
+from config import FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS
 
 
 def create_ring(center, inner_d, outer_d):
@@ -18,7 +18,6 @@ def generate_rings(boundary, inner_d, outer_d, spacing, edge_margin):
     step = outer_d + spacing
     minx, miny, maxx, maxy = boundary.bounds
 
-    # Apply edge margin
     minx += edge_margin
     miny += edge_margin
     maxx -= edge_margin
@@ -27,11 +26,9 @@ def generate_rings(boundary, inner_d, outer_d, spacing, edge_margin):
     usable_width = maxx - minx
     usable_height = maxy - miny
 
-    # Number of rings that fit
     nx = int((usable_width + spacing) // step)
     ny = int((usable_height + spacing) // step)
 
-    # Center the grid
     offset_x = (usable_width - (nx * outer_d + (nx - 1) * spacing)) / 2
     offset_y = (usable_height - (ny * outer_d + (ny - 1) * spacing)) / 2
 
@@ -46,7 +43,7 @@ def generate_rings(boundary, inner_d, outer_d, spacing, edge_margin):
             ring, outer = create_ring((x, y), inner_d, outer_d)
 
             if fits_inside(outer, boundary):
-                rings.append((ring, outer))
+                rings.append((ring, outer, (x, y)))
 
     return rings
 
@@ -55,15 +52,17 @@ def create_fingers(center, inner_d, outer_d):
     finger_radii = []
 
     r_outer = outer_d / 2 - FINGER_TO_RING
-    r_inner = inner_d / 2 + FINGER_TO_RING
+    r_inner_limit = inner_d / 2 + FINGER_TO_RING
 
     step = FINGER_THICKNESS + FINGER_SPACING
     current_r = r_outer
 
     while True:
-        r_inner_edge = current_r - FINGER_THICKNESS
-        if r_inner_edge <= r_inner:
+        r_inner = current_r - FINGER_THICKNESS
+
+        if r_inner <= r_inner_limit:
             break
+
         finger_radii.append(current_r)
         current_r -= step
 
