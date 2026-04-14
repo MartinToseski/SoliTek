@@ -22,7 +22,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
     else:
         dimstyle = doc.dimstyles.get("EZ_DIM")
 
-    # 🔥 Precision fix
+    # Precision fix
     dimstyle.dxf.dimdec = 4
     dimstyle.dxf.dimzin = 0
 
@@ -64,7 +64,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
         msp.add_circle(center, inner_diameter / 2, dxfattribs={"layer": "RINGS"})
 
         # ===== Fingers =====
-        finger_radii = create_fingers(center, inner_diameter, outer_diameter)
+        finger_radii = create_fingers(inner_diameter, outer_diameter)
 
         for r in finger_radii:
             r_outer = r

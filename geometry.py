@@ -42,7 +42,7 @@ def generate_rings(boundary, inner_d, outer_d, spacing, edge_margin):
     return rings
 
 
-def create_fingers(center, inner_d, outer_d):
+def create_fingers(inner_d, outer_d):
     finger_radii = []
 
     r_outer = outer_d / 2 - FINGER_TO_RING
