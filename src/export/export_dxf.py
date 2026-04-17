@@ -1,5 +1,5 @@
 import ezdxf
-from src.geometry.geometry import create_fingers
+from src.geometry.circular import create_fingers
 from src.config.config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
 
 
