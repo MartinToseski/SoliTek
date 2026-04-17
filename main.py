@@ -1,7 +1,7 @@
 from shapely.geometry import box
-from config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, OUTER_DIAMETER, INNER_DIAMETER
-from geometry import generate_rings
-from export import export_dxf
+from src.config.config import WAFER_SIZE, WAFER_SIZE_LARGE, RING_SPACING, EDGE_MARGIN, OUTER_DIAMETER, INNER_DIAMETER
+from src.geometry.geometry import generate_rings
+from src.export.export_dxf import export_dxf
 
 
 if __name__ == '__main__':

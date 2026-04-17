@@ -1,5 +1,5 @@
 from shapely.geometry import Point
-from config import FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS
+from src.config.config import FINGER_TO_RING, FINGER_SPACING, FINGER_THICKNESS
 
 
 def create_ring(center, inner_d, outer_d):
