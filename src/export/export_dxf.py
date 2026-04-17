@@ -1,20 +1,28 @@
 import ezdxf
 from src.geometry.circular import create_fingers
-from src.config.config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
+from src.config.config import (
+    WAFER_SIZE,
+    RING_SPACING,
+    EDGE_MARGIN,
+    FINGER_THICKNESS,
+    FINGER_SPACING,
+    FINGER_TO_RING
+)
 
 
-def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x, actual_margin_y, filename):
+def export_dxf(boundary, rings, inner_diameter, outer_diameter,
+               actual_margin_x, actual_margin_y, filename):
+
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
-
     msp = doc.modelspace()
 
+    # ===== DIM STYLE =====
     if "EZ_DIM" not in doc.dimstyles:
         dimstyle = doc.dimstyles.new("EZ_DIM")
     else:
         dimstyle = doc.dimstyles.get("EZ_DIM")
 
-    # Precision fix
     dimstyle.dxf.dimdec = 4
     dimstyle.dxf.dimzin = 0
 
@@ -39,7 +47,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
         dxfattribs={"layer": "WAFER"}
     )
 
-    # ---- Wafer width ----
+    # ===== WAFER WIDTH =====
     msp.add_linear_dim(
         base=(minx, miny - OFFSET),
         p1=(minx, miny),
@@ -48,18 +56,20 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
         dxfattribs={"layer": "DIMS"}
     ).render()
 
+    # Precompute finger radii
     finger_radii = create_fingers(inner_diameter, outer_diameter)
+
     for i, ring_data in enumerate(rings):
         cx, cy = ring_data["center"]
 
         r_outer = outer_diameter / 2
         r_inner = inner_diameter / 2
 
-        # ===== Rings =====
+        # ===== RINGS =====
         msp.add_circle((cx, cy), r_outer, dxfattribs={"layer": "RINGS"})
         msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
 
-        # ===== Fingers =====
+        # ===== FINGERS (FILLED WITH HATCH) =====
         for r in finger_radii:
             r_outer_f = r
             r_inner_f = r - FINGER_THICKNESS
@@ -67,8 +77,22 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
             if r_inner_f <= r_inner:
                 continue
 
+            # Draw boundaries (optional but useful)
             msp.add_circle((cx, cy), r_outer_f, dxfattribs={"layer": "FINGERS"})
             msp.add_circle((cx, cy), r_inner_f, dxfattribs={"layer": "FINGERS"})
+
+            # Hatch fill (arc-based for compatibility)
+            hatch = msp.add_hatch(color=7)
+
+            # Outer boundary (2 arcs)
+            path_outer = hatch.paths.add_edge_path()
+            path_outer.add_arc((cx, cy), r_outer_f, 0, 180)
+            path_outer.add_arc((cx, cy), r_outer_f, 180, 360)
+
+            # Inner boundary (hole)
+            path_inner = hatch.paths.add_edge_path()
+            path_inner.add_arc((cx, cy), r_inner_f, 0, 180)
+            path_inner.add_arc((cx, cy), r_inner_f, 180, 360)
 
         # ===== DIMENSIONS (ONLY FIRST RING) =====
         if i == 0:
@@ -84,7 +108,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- BOTTOM edge margin (actual) ----
+            # ---- BOTTOM edge margin ----
             ring_bottom = cy - r_outer
 
             msp.add_linear_dim(
@@ -96,7 +120,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- Outer diameter ----
+            # ---- OUTER DIAMETER ----
             msp.add_diameter_dim(
                 center=(cx, cy),
                 radius=r_outer,
@@ -106,17 +130,17 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- Inner diameter ----
+            # ---- INNER DIAMETER (LEFT) ----
             msp.add_diameter_dim(
                 center=(cx, cy),
                 radius=r_inner,
-                angle=90,
+                angle=180,
                 mpoint=(cx - r_inner, cy),
                 dimstyle="EZ_DIM",
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- Finger spacing ----
+            # ---- FINGER SPACING ----
             if len(finger_radii) >= 2:
                 r1 = finger_radii[0]
                 r2 = finger_radii[1]
@@ -130,19 +154,19 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
                     dxfattribs={"layer": "DIMS"}
                 ).render()
 
-            # ---- Ring spacing ----
+            # ---- RING SPACING ----
             if len(rings) > 1:
                 cx2, cy2 = rings[1]["center"]
 
                 msp.add_linear_dim(
                     base=(cx, maxy + OFFSET + 20),
                     p1=(cx + r_outer, cy),
-                    p2=(cx2 - r_outer, cy2),
+                    p2=(cx2 - r_outer, cy),  # fixed alignment
                     dimstyle="EZ_DIM",
                     dxfattribs={"layer": "DIMS"}
                 ).render()
 
-            # ---- Finger thickness ----
+            # ---- FINGER THICKNESS ----
             if len(finger_radii) >= 1:
                 r = finger_radii[0]
 
@@ -179,4 +203,4 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x,
         txt.dxf.insert = (text_x, text_y - i * 5)
 
     doc.saveas(f"data/{filename}.dxf")
-    print("DXF file saved")
+    print("DXF file saved with filled fingers")
