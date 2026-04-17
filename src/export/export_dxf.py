@@ -3,7 +3,7 @@ from src.geometry.circular import create_fingers
 from src.config.config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
 
 
-def export_dxf(boundary, rings, inner_diameter, outer_diameter):
+def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
 
@@ -174,5 +174,5 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter):
         )
         txt.dxf.insert = (text_x, text_y - i * 5)
 
-    doc.saveas("data/wafer_layout.dxf")
+    doc.saveas(f"data/{filename}.dxf")
     print("DXF file saved")

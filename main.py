@@ -10,4 +10,4 @@ if __name__ == '__main__':
     rings = generate_ring_layout(wafer, INNER_DIAMETER, OUTER_DIAMETER, RING_SPACING, EDGE_MARGIN)
     print(f"Generated {len(rings)} rings")
 
-    export_dxf(wafer, rings, INNER_DIAMETER, OUTER_DIAMETER)
+    export_dxf(wafer, rings, INNER_DIAMETER, OUTER_DIAMETER, "initial_layout_large")
