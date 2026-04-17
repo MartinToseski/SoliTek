@@ -3,7 +3,7 @@ from src.geometry.circular import create_fingers
 from src.config.config import WAFER_SIZE, RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
 
 
-def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
+def export_dxf(boundary, rings, inner_diameter, outer_diameter, actual_margin_x, actual_margin_y, filename):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
 
@@ -48,45 +48,47 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
         dxfattribs={"layer": "DIMS"}
     ).render()
 
-    for i, (ring, outer, center) in enumerate(rings):
-        cx, cy = center
+    finger_radii = create_fingers(inner_diameter, outer_diameter)
+    for i, ring_data in enumerate(rings):
+        cx, cy = ring_data["center"]
+
+        r_outer = outer_diameter / 2
+        r_inner = inner_diameter / 2
 
         # ===== Rings =====
-        msp.add_circle(center, outer_diameter / 2, dxfattribs={"layer": "RINGS"})
-        msp.add_circle(center, inner_diameter / 2, dxfattribs={"layer": "RINGS"})
+        msp.add_circle((cx, cy), r_outer, dxfattribs={"layer": "RINGS"})
+        msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
 
         # ===== Fingers =====
-        finger_radii = create_fingers(inner_diameter, outer_diameter)
-
         for r in finger_radii:
-            r_outer = r
-            r_inner = r - FINGER_THICKNESS
+            r_outer_f = r
+            r_inner_f = r - FINGER_THICKNESS
 
-            if r_inner <= inner_diameter / 2:
+            if r_inner_f <= r_inner:
                 continue
 
-            msp.add_circle(center, r_outer, dxfattribs={"layer": "FINGERS"})
-            msp.add_circle(center, r_inner, dxfattribs={"layer": "FINGERS"})
+            msp.add_circle((cx, cy), r_outer_f, dxfattribs={"layer": "FINGERS"})
+            msp.add_circle((cx, cy), r_inner_f, dxfattribs={"layer": "FINGERS"})
 
-        # ===== DIMENSIONS (ONLY FIRST RING = bottom-left) =====
+        # ===== DIMENSIONS (ONLY FIRST RING) =====
         if i == 0:
 
             # ---- LEFT edge margin ----
-            ring_left = cx - outer_diameter / 2
+            ring_left = cx - r_outer
 
             msp.add_linear_dim(
-                base=(minx - OFFSET, cy),
+                base=(minx - OFFSET - 30, cy),
                 p1=(minx, cy),
                 p2=(ring_left, cy),
                 dimstyle="EZ_DIM",
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
-            # ---- BOTTOM edge margin ----
-            ring_bottom = cy - outer_diameter / 2
+            # ---- BOTTOM edge margin (actual) ----
+            ring_bottom = cy - r_outer
 
             msp.add_linear_dim(
-                base=(cx, miny - OFFSET - 20),
+                base=(cx, miny - OFFSET - 40),
                 p1=(cx, miny),
                 p2=(cx, ring_bottom),
                 angle=90,
@@ -96,18 +98,20 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
 
             # ---- Outer diameter ----
             msp.add_diameter_dim(
-                center=center,
-                radius=outer_diameter / 2,
+                center=(cx, cy),
+                radius=r_outer,
                 angle=0,
+                mpoint=(cx, cy - r_outer),
                 dimstyle="EZ_DIM",
                 dxfattribs={"layer": "DIMS"}
             ).render()
 
             # ---- Inner diameter ----
             msp.add_diameter_dim(
-                center=center,
-                radius=inner_diameter / 2,
+                center=(cx, cy),
+                radius=r_inner,
                 angle=90,
+                mpoint=(cx - r_inner, cy),
                 dimstyle="EZ_DIM",
                 dxfattribs={"layer": "DIMS"}
             ).render()
@@ -128,9 +132,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
 
             # ---- Ring spacing ----
             if len(rings) > 1:
-                _, _, center2 = rings[1]
-                cx2, cy2 = center2
-                r_outer = outer_diameter / 2
+                cx2, cy2 = rings[1]["center"]
 
                 msp.add_linear_dim(
                     base=(cx, maxy + OFFSET + 20),
@@ -157,11 +159,13 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter, filename):
     text_y = maxy
 
     constants = [
-        f"WAFER_SIZE = {WAFER_SIZE:.4f}",
+        f"WAFER_SIZE = {(maxx - minx):.4f}",
         f"OUTER_DIAMETER = {outer_diameter:.4f}",
         f"INNER_DIAMETER = {inner_diameter:.4f}",
         f"RING_SPACING = {RING_SPACING:.4f}",
-        f"EDGE_MARGIN = {EDGE_MARGIN:.4f}",
+        f"MIN_EDGE_MARGIN = {EDGE_MARGIN:.4f}",
+        f"ACTUAL_MARGIN_X = {actual_margin_x:.4f}",
+        f"ACTUAL_MARGIN_Y = {actual_margin_y:.4f}",
         f"FINGER_THICKNESS = {FINGER_THICKNESS:.4f}",
         f"FINGER_SPACING = {FINGER_SPACING:.4f}",
         f"FINGER_TO_RING = {FINGER_TO_RING:.4f}",
