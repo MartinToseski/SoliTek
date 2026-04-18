@@ -1,13 +1,7 @@
 import ezdxf
 from src.geometry.circular import create_fingers
-from src.config.config import (
-    WAFER_SIZE,
-    RING_SPACING,
-    EDGE_MARGIN,
-    FINGER_THICKNESS,
-    FINGER_SPACING,
-    FINGER_TO_RING
-)
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
+from shapely.geometry import Point
 
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
@@ -81,18 +75,23 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
             msp.add_circle((cx, cy), r_outer_f, dxfattribs={"layer": "FINGERS"})
             msp.add_circle((cx, cy), r_inner_f, dxfattribs={"layer": "FINGERS"})
 
+            outer_poly = Point(cx, cy).buffer(r_outer_f, resolution=128)
+            inner_poly = Point(cx, cy).buffer(r_inner_f, resolution=128)
+
             # Hatch fill (arc-based for compatibility)
             hatch = msp.add_hatch(color=7)
 
             # Outer boundary (2 arcs)
-            path_outer = hatch.paths.add_edge_path()
-            path_outer.add_arc((cx, cy), r_outer_f, 0, 180)
-            path_outer.add_arc((cx, cy), r_outer_f, 180, 360)
+            hatch.paths.add_polyline_path(
+                list(outer_poly.exterior.coords),
+                is_closed=True
+            )
 
             # Inner boundary (hole)
-            path_inner = hatch.paths.add_edge_path()
-            path_inner.add_arc((cx, cy), r_inner_f, 0, 180)
-            path_inner.add_arc((cx, cy), r_inner_f, 180, 360)
+            hatch.paths.add_polyline_path(
+                list(inner_poly.exterior.coords),
+                is_closed=True
+            )
 
         # ===== DIMENSIONS (ONLY FIRST RING) =====
         if i == 0:
