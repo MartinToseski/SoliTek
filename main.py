@@ -5,9 +5,9 @@ from src.export.export_dxf import export_dxf
 
 
 if __name__ == '__main__':
-    wafer = box(0, 0, WAFER_SIZE_LARGE, WAFER_SIZE_LARGE)
+    wafer = box(0, 0, WAFER_SIZE, WAFER_SIZE)
 
     rings, actual_margin_x, actual_margin_y = generate_ring_layout(wafer, INNER_DIAMETER, OUTER_DIAMETER, RING_SPACING, EDGE_MARGIN)
     print(f"Generated {len(rings)} rings")
 
-    export_dxf(wafer, rings, INNER_DIAMETER, OUTER_DIAMETER, actual_margin_x, actual_margin_y, "filled_fingers_large")
+    export_dxf(wafer, rings, INNER_DIAMETER, OUTER_DIAMETER, actual_margin_x, actual_margin_y, "irregular_rings_small")
