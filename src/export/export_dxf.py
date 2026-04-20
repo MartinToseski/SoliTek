@@ -1,12 +1,8 @@
 import ezdxf
 import math
 from shapely.geometry import Point, Polygon
-
 from src.geometry.circular import create_fingers
-from src.config.config import (
-    RING_SPACING, EDGE_MARGIN,
-    FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
-)
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
 
 
 # ================= HELPERS =================
@@ -163,23 +159,40 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
         # ===== INNER RING =====
         msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
 
-        # ===== FINGERS =====
         cut_sector = create_cut_sector(cx, cy, r_outer * 1.5, theta, cut_angle)
 
-        for r in finger_radii:
+        # ===== FINGERS =====
+        for idx, r in enumerate(finger_radii):
             r_outer_f = r
             r_inner_f = r - FINGER_THICKNESS
 
             if r_inner_f <= r_inner:
                 continue
 
+            local_angle = cut_angle
+
+            if idx == len(finger_radii) - 2:
+                local_angle = cut_angle * 0.75
+
+            elif idx == len(finger_radii) - 3:
+                local_angle = cut_angle * 0.95
+
+            cut_sector = create_cut_sector(cx, cy, r_outer * 1.5, theta, local_angle)
+
             outer_poly = Point(cx, cy).buffer(r_outer_f, resolution=128)
             inner_poly = Point(cx, cy).buffer(r_inner_f, resolution=128)
 
             ring_poly = outer_poly.difference(inner_poly)
-            finger_cut = ring_poly.difference(cut_sector)
 
-            for geom in getattr(finger_cut, "geoms", [finger_cut]):
+            # First finger - no bridge (full circle)
+            if idx == len(finger_radii)-1:
+                final_geom = ring_poly
+            else:
+                # normal behavior
+                final_geom = ring_poly.difference(cut_sector)
+
+            # ===== DRAW =====
+            for geom in getattr(final_geom, "geoms", [final_geom]):
                 coords = list(geom.exterior.coords)
 
                 msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
@@ -190,21 +203,20 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                 for interior in geom.interiors:
                     hatch.paths.add_polyline_path(list(interior.coords), is_closed=True)
 
-            # bridge
-            p1_f, p2_f = get_cut_endpoints(cx, cy, r_outer_f, theta, cut_angle)
-            bridge = create_finger_bridge(p1_f, p2_f, FINGER_THICKNESS)
+            # Bridge only for non-first fingers
+            if idx < len(finger_radii) - 1:
+                p1_f, p2_f = get_cut_endpoints(cx, cy, r_outer_f, theta, local_angle)
 
-            if bridge:
-                coords = list(bridge.exterior.coords)
+                bridge = create_finger_bridge(p1_f, p2_f, FINGER_THICKNESS)
 
-                msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
-
-                hatch = msp.add_hatch(color=7)
-                hatch.paths.add_polyline_path(coords, is_closed=True)
+                if bridge:
+                    coords = list(bridge.exterior.coords)
+                    msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
+                    hatch = msp.add_hatch(color=7)
+                    hatch.paths.add_polyline_path(coords, is_closed=True)
 
         # ===== DIMENSIONS =====
         if i == 0:
-
             # edge margins
             ring_left = cx - r_outer
             ring_bottom = cy - r_outer
