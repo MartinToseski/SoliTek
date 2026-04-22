@@ -61,6 +61,93 @@ def create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner):
     return Polygon([p1_outer, p2_outer, p2_inner, p1_inner])
 
 
+def split_bridge_segments(p1_outer, p2_outer, p1_inner, p2_inner, ratio=0.15):
+    def lerp(p1, p2, t):
+        return (p1[0] + (p2[0] - p1[0]) * t,
+                p1[1] + (p2[1] - p1[1]) * t)
+
+    pA_outer = lerp(p1_outer, p2_outer, ratio)
+    pB_outer = lerp(p1_outer, p2_outer, 1 - ratio)
+
+    pA_inner = lerp(p1_inner, p2_inner, ratio)
+    pB_inner = lerp(p1_inner, p2_inner, 1 - ratio)
+
+    left_bridge = Polygon([p1_outer, pA_outer, pA_inner, p1_inner])
+    right_bridge = Polygon([pB_outer, p2_outer, p2_inner, pB_inner])
+
+    return left_bridge, right_bridge, pA_outer, pB_outer, pA_inner, pB_inner
+
+
+def create_middle_curve_bridge_exact(cx, cy, pA_outer, pB_outer, pA_inner, pB_inner, thickness_mult=12, steps=40):
+    def angle_of(p):
+        return math.atan2(p[1] - cy, p[0] - cx)
+
+    # Inner Arc
+    r_inner = math.hypot(pA_inner[0] - cx, pA_inner[1] - cy)
+
+    a_start = angle_of(pA_inner)
+    a_end = angle_of(pB_inner)
+
+    if a_end < a_start:
+        a_end += 2 * math.pi
+
+    inner_path = []
+    for i in range(steps + 1):
+        t = i / steps
+        a = a_start + (a_end - a_start) * t
+        inner_path.append((
+            cx + r_inner * math.cos(a),
+            cy + r_inner * math.sin(a)
+        ))
+
+    # Bridge Direction
+    dx = pB_outer[0] - pA_outer[0]
+    dy = pB_outer[1] - pA_outer[1]
+    length = math.hypot(dx, dy)
+
+    if length == 0:
+        return None
+
+    ux = dx / length
+    uy = dy / length
+
+    # perpendicular
+    nx = uy
+    ny = -ux
+
+    offset = thickness_mult * FINGER_THICKNESS
+
+    # Force outer points to stay EXACTLY aligned with bridge endpoints
+    outer_A = (
+        pA_outer[0] + nx * offset,
+        pA_outer[1] + ny * offset
+    )
+
+    outer_B = (
+        pB_outer[0] + nx * offset,
+        pB_outer[1] + ny * offset
+    )
+
+    coords = []
+
+    # inner arc (same)
+    coords.extend(inner_path)
+
+    # right vertical edge (perfect connection)
+    coords.append(pB_inner)
+    coords.append(pB_outer)
+
+    # outer straight (parallel)
+    coords.append(outer_B)
+    coords.append(outer_A)
+
+    # left vertical edge (perfect connection)
+    coords.append(pA_outer)
+    coords.append(pA_inner)
+
+    return Polygon(coords)
+
+
 # ================= MAIN =================
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
@@ -146,9 +233,9 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
             local_angle = cut_angle
 
             if idx == len(finger_radii) - 2:
-                local_angle *= 0.75
+                local_angle *= 0.67
             elif idx == len(finger_radii) - 3:
-                local_angle *= 0.95
+                local_angle *= 0.93
 
             cut_sector = create_cut_sector(cx, cy, r_outer * 1.5, theta, local_angle)
 
@@ -168,8 +255,25 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                 p1_outer, p2_outer = get_cut_endpoints(cx, cy, r_outer_f, theta, local_angle)
                 p1_inner, p2_inner = get_cut_endpoints(cx, cy, r_inner_f, theta, local_angle)
 
-                bridge = create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner)
-                geom_list.append(bridge)
+                if idx == len(finger_radii) - 2:
+                    left_bridge, right_bridge, pA_outer, pB_outer, pA_inner, pB_inner = split_bridge_segments(
+                        p1_outer, p2_outer,
+                        p1_inner, p2_inner,
+                        ratio=0.15
+                    )
+
+                    middle_curve = create_middle_curve_bridge_exact(
+                        cx, cy,
+                        pA_outer, pB_outer,
+                        pA_inner, pB_inner
+                    )
+
+                    geom_list.append(left_bridge)
+                    geom_list.append(middle_curve)
+                    geom_list.append(right_bridge)
+                else:
+                    bridge = create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner)
+                    geom_list.append(bridge)
 
             merged = unary_union(geom_list).buffer(0)
 
@@ -189,18 +293,92 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
             ring_left = cx - r_outer
             ring_bottom = cy - r_outer
 
-            msp.add_linear_dim((minx - OFFSET - 30, cy), (minx, cy), (ring_left, cy),
-                               dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
+            # ---- LEFT EDGE MARGIN ----
+            msp.add_linear_dim(
+                (minx - OFFSET - 30, cy),
+                (minx, cy),
+                (ring_left, cy),
+                dimstyle="EZ_DIM",
+                dxfattribs={"layer": "DIMS"}
+            ).render()
 
-            msp.add_linear_dim((cx, miny - OFFSET - 40), (cx, miny), (cx, ring_bottom),
-                               angle=90, dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
+            # ---- BOTTOM EDGE MARGIN ----
+            msp.add_linear_dim(
+                (cx, miny - OFFSET - 40),
+                (cx, miny),
+                (cx, ring_bottom),
+                angle=90,
+                dimstyle="EZ_DIM",
+                dxfattribs={"layer": "DIMS"}
+            ).render()
 
-            # ✅ FIXED DIAMETER CALLS
-            msp.add_diameter_dim(center=(cx, cy), mpoint=(cx, cy - r_outer),
-                                 dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
+            # ---- OUTER DIAMETER ----
+            msp.add_diameter_dim(
+                center=(cx, cy),
+                mpoint=(cx, cy - r_outer),
+                dimstyle="EZ_DIM",
+                dxfattribs={"layer": "DIMS"}
+            ).render()
 
-            msp.add_diameter_dim(center=(cx, cy), mpoint=(cx - r_inner, cy),
-                                 dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
+            # ---- INNER DIAMETER ----
+            msp.add_diameter_dim(
+                center=(cx, cy),
+                mpoint=(cx - r_inner, cy),
+                dimstyle="EZ_DIM",
+                dxfattribs={"layer": "DIMS"}
+            ).render()
+
+            # ---- FINGER TO RING ----
+            if len(finger_radii) >= 1:
+                first_r = finger_radii[0]
+
+                first_inner = first_r - FINGER_THICKNESS
+
+                msp.add_linear_dim(
+                    base=(cx, maxy + OFFSET + 10),
+                    p1=(cx + r_outer, cy),  # outer ring edge
+                    p2=(cx + first_inner, cy),  # first finger inner edge
+                    dimstyle="EZ_DIM",
+                    dxfattribs={"layer": "DIMS"}
+                ).render()
+
+            # ---- FINGER SPACING ----
+            if len(finger_radii) >= 2:
+                r1 = finger_radii[0]
+                r2 = finger_radii[1]
+                inner_r1 = r1 - FINGER_THICKNESS
+
+                msp.add_linear_dim(
+                    base=(cx, maxy + OFFSET),
+                    p1=(cx + inner_r1, cy),
+                    p2=(cx + r2, cy),
+                    dimstyle="EZ_DIM",
+                    dxfattribs={"layer": "DIMS"}
+                ).render()
+
+            # ---- RING SPACING ----
+            if len(rings) > 1:
+                cx2, cy2 = rings[1]["center"]
+
+                msp.add_linear_dim(
+                    base=(cx, maxy + OFFSET + 20),
+                    p1=(cx + r_outer, cy),
+                    p2=(cx2 - r_outer, cy),
+                    dimstyle="EZ_DIM",
+                    dxfattribs={"layer": "DIMS"}
+                ).render()
+
+            # ---- FINGER THICKNESS ----
+            if len(finger_radii) >= 1:
+                r = finger_radii[0]
+
+                msp.add_linear_dim(
+                    base=(cx, maxy + OFFSET + 40),
+                    p1=(cx + r, cy),
+                    p2=(cx + r - FINGER_THICKNESS, cy),
+                    dimstyle="EZ_DIM",
+                    dxfattribs={"layer": "DIMS"}
+                ).render()
 
         # ===== CONSTANTS PANEL =====
         text_x = maxx + 60
