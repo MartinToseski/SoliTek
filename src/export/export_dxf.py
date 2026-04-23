@@ -1,151 +1,197 @@
 import ezdxf
-import math
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point
 from shapely.ops import unary_union
 
 from src.geometry.circular import create_fingers
-from src.config.config import (
-    RING_SPACING, EDGE_MARGIN,
-    FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
-)
-
-# ================= HELPERS =================
-
-def get_group_center(cx, cy, pitch):
-    ix = int(cx // pitch)
-    iy = int(cy // pitch)
-    gx = (ix // 2) * 2 * pitch + pitch
-    gy = (iy // 2) * 2 * pitch + pitch
-    return gx, gy
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
+from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, create_middle_curve_bridge_exact
+from src.geometry.utils import get_group_center, get_theta, get_cut_angles
 
 
-def get_theta(cx, cy, gx, gy):
-    theta = math.degrees(math.atan2(gy - cy, gx - cx))
-    return (theta + 360) % 360
+# ================= DRAW HELPERS =================
+
+def draw_merged_geometry(msp, merged):
+    for geom in getattr(merged, "geoms", [merged]):
+        coords = list(geom.exterior.coords)
+
+        msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
+
+        hatch = msp.add_hatch(color=7)
+        hatch.paths.add_polyline_path(coords, is_closed=True)
+
+        for interior in geom.interiors:
+            hatch.paths.add_polyline_path(list(interior.coords), is_closed=True)
 
 
-def get_cut_angles(theta, angle_deg):
-    start = theta + angle_deg / 2
-    end = theta - angle_deg / 2
-    return start % 360, end % 360
+def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
+    start_angle, end_angle = get_cut_angles(theta, cut_angle)
+
+    msp.add_arc((cx, cy), r_outer, start_angle, end_angle,
+                dxfattribs={"layer": "RINGS", "linetype": "DASHED"})
+
+    p1, p2 = get_cut_endpoints(cx, cy, r_outer, theta, cut_angle)
+    msp.add_line(p1, p2, dxfattribs={"layer": "RINGS", "linetype": "DASHED"})
+
+    msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
 
 
-def create_cut_sector(cx, cy, radius, theta, angle_deg):
-    angle_start = math.radians(theta - angle_deg / 2)
-    angle_end = math.radians(theta + angle_deg / 2)
+def draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii):
+    for idx, r in enumerate(finger_radii):
+        r_outer_f = r
+        r_inner_f = r - FINGER_THICKNESS
 
-    points = [(cx, cy)]
-    steps = 60
+        if r_inner_f <= r_inner:
+            continue
 
-    for i in range(steps + 1):
-        a = angle_start + (angle_end - angle_start) * i / steps
-        x = cx + radius * math.cos(a)
-        y = cy + radius * math.sin(a)
-        points.append((x, y))
+        local_angle = cut_angle
 
-    points.append((cx, cy))
-    return Polygon(points).buffer(0)
+        if idx == len(finger_radii) - 2:
+            local_angle *= 0.67
+        elif idx == len(finger_radii) - 3:
+            local_angle *= 0.93
+
+        cut_sector = create_cut_sector(cx, cy, r_outer * 1.5, theta, local_angle)
+
+        outer_poly = Point(cx, cy).buffer(r_outer_f, resolution=128)
+        inner_poly = Point(cx, cy).buffer(r_inner_f, resolution=128)
+
+        ring_poly = outer_poly.difference(inner_poly)
+
+        if idx == len(finger_radii) - 1:
+            finger_geom = ring_poly
+        else:
+            finger_geom = ring_poly.difference(cut_sector)
+
+        geom_list = [finger_geom]
+
+        if idx < len(finger_radii) - 1:
+            p1_outer, p2_outer = get_cut_endpoints(cx, cy, r_outer_f, theta, local_angle)
+            p1_inner, p2_inner = get_cut_endpoints(cx, cy, r_inner_f, theta, local_angle)
+
+            if idx == len(finger_radii) - 2:
+                left_bridge, right_bridge, pA_outer, pB_outer, pA_inner, pB_inner = split_bridge_segments(
+                    p1_outer, p2_outer,
+                    p1_inner, p2_inner,
+                    ratio=0.15
+                )
+
+                middle_curve = create_middle_curve_bridge_exact(
+                    cx, cy,
+                    pA_outer, pB_outer,
+                    pA_inner, pB_inner
+                )
+
+                geom_list.extend([left_bridge, middle_curve, right_bridge])
+            else:
+                bridge = create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner)
+                geom_list.append(bridge)
+
+        merged = unary_union(geom_list).buffer(0)
+        draw_merged_geometry(msp, merged)
 
 
-def get_cut_endpoints(cx, cy, radius, theta, angle_deg):
-    a1 = math.radians(theta - angle_deg / 2)
-    a2 = math.radians(theta + angle_deg / 2)
+def draw_dimensions(msp, cx, cy, r_outer, r_inner, minx, miny, maxy, OFFSET, finger_radii, rings):
+    ring_left = cx - r_outer
+    ring_bottom = cy - r_outer
 
-    p1 = (cx + radius * math.cos(a1), cy + radius * math.sin(a1))
-    p2 = (cx + radius * math.cos(a2), cy + radius * math.sin(a2))
+    msp.add_linear_dim(
+        (minx - OFFSET - 30, cy),
+        (minx, cy),
+        (ring_left, cy),
+        dimstyle="EZ_DIM",
+        dxfattribs={"layer": "DIMS"}
+    ).render()
 
-    return p1, p2
+    msp.add_linear_dim(
+        (cx, miny - OFFSET - 40),
+        (cx, miny),
+        (cx, ring_bottom),
+        angle=90,
+        dimstyle="EZ_DIM",
+        dxfattribs={"layer": "DIMS"}
+    ).render()
+
+    msp.add_diameter_dim(
+        center=(cx, cy),
+        mpoint=(cx, cy - r_outer),
+        dimstyle="EZ_DIM",
+        dxfattribs={"layer": "DIMS"}
+    ).render()
+
+    msp.add_diameter_dim(
+        center=(cx, cy),
+        mpoint=(cx - r_inner, cy),
+        dimstyle="EZ_DIM",
+        dxfattribs={"layer": "DIMS"}
+    ).render()
+
+    if len(finger_radii) >= 1:
+        first_r = finger_radii[0]
+
+        msp.add_linear_dim(
+            base=(cx, maxy + OFFSET + 10),
+            p1=(cx + r_outer, cy),
+            p2=(cx + first_r, cy),
+            dimstyle="EZ_DIM",
+            dxfattribs={"layer": "DIMS"}
+        ).render()
+
+    if len(finger_radii) >= 2:
+        r1 = finger_radii[0]
+        r2 = finger_radii[1]
+        inner_r1 = r1 - FINGER_THICKNESS
+
+        msp.add_linear_dim(
+            base=(cx, maxy + OFFSET),
+            p1=(cx + inner_r1, cy),
+            p2=(cx + r2, cy),
+            dimstyle="EZ_DIM",
+            dxfattribs={"layer": "DIMS"}
+        ).render()
+
+    if len(rings) > 1:
+        cx2, cy2 = rings[1]["center"]
+
+        msp.add_linear_dim(
+            base=(cx, maxy + OFFSET + 20),
+            p1=(cx + r_outer, cy),
+            p2=(cx2 - r_outer, cy),
+            dimstyle="EZ_DIM",
+            dxfattribs={"layer": "DIMS"}
+        ).render()
+
+    if len(finger_radii) >= 1:
+        r = finger_radii[0]
+
+        msp.add_linear_dim(
+            base=(cx, maxy + OFFSET + 40),
+            p1=(cx + r, cy),
+            p2=(cx + r - FINGER_THICKNESS, cy),
+            dimstyle="EZ_DIM",
+            dxfattribs={"layer": "DIMS"}
+        ).render()
 
 
-def create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner):
-    return Polygon([p1_outer, p2_outer, p2_inner, p1_inner])
+def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, actual_margin_x, actual_margin_y):
+    text_x = maxx + 60
+    text_y = maxy
 
+    constants = [
+        f"WAFER_SIZE = {(maxx - minx):.4f}",
+        f"OUTER_DIAMETER = {outer_diameter:.4f}",
+        f"INNER_DIAMETER = {inner_diameter:.4f}",
+        f"RING_SPACING = {RING_SPACING:.4f}",
+        f"MIN_EDGE_MARGIN = {EDGE_MARGIN:.4f}",
+        f"ACTUAL_MARGIN_X = {actual_margin_x:.4f}",
+        f"ACTUAL_MARGIN_Y = {actual_margin_y:.4f}",
+        f"FINGER_THICKNESS = {FINGER_THICKNESS:.4f}",
+        f"FINGER_SPACING = {FINGER_SPACING:.4f}",
+        f"FINGER_TO_RING = {FINGER_TO_RING:.4f}",
+    ]
 
-def split_bridge_segments(p1_outer, p2_outer, p1_inner, p2_inner, ratio=0.15):
-    def lerp(p1, p2, t):
-        return (p1[0] + (p2[0] - p1[0]) * t,
-                p1[1] + (p2[1] - p1[1]) * t)
-
-    pA_outer = lerp(p1_outer, p2_outer, ratio)
-    pB_outer = lerp(p1_outer, p2_outer, 1 - ratio)
-
-    pA_inner = lerp(p1_inner, p2_inner, ratio)
-    pB_inner = lerp(p1_inner, p2_inner, 1 - ratio)
-
-    left_bridge = Polygon([p1_outer, pA_outer, pA_inner, p1_inner])
-    right_bridge = Polygon([pB_outer, p2_outer, p2_inner, pB_inner])
-
-    return left_bridge, right_bridge, pA_outer, pB_outer, pA_inner, pB_inner
-
-
-def create_middle_curve_bridge_exact(cx, cy, pA_outer, pB_outer, pA_inner, pB_inner, thickness_mult=12, steps=40):
-    def angle_of(p):
-        return math.atan2(p[1] - cy, p[0] - cx)
-
-    # Inner Arc
-    r_inner = math.hypot(pA_inner[0] - cx, pA_inner[1] - cy)
-
-    a_start = angle_of(pA_inner)
-    a_end = angle_of(pB_inner)
-
-    if a_end < a_start:
-        a_end += 2 * math.pi
-
-    inner_path = []
-    for i in range(steps + 1):
-        t = i / steps
-        a = a_start + (a_end - a_start) * t
-        inner_path.append((
-            cx + r_inner * math.cos(a),
-            cy + r_inner * math.sin(a)
-        ))
-
-    # Bridge Direction
-    dx = pB_outer[0] - pA_outer[0]
-    dy = pB_outer[1] - pA_outer[1]
-    length = math.hypot(dx, dy)
-
-    if length == 0:
-        return None
-
-    ux = dx / length
-    uy = dy / length
-
-    # perpendicular
-    nx = uy
-    ny = -ux
-
-    offset = thickness_mult * FINGER_THICKNESS
-
-    # Force outer points to stay EXACTLY aligned with bridge endpoints
-    outer_A = (
-        pA_outer[0] + nx * offset,
-        pA_outer[1] + ny * offset
-    )
-
-    outer_B = (
-        pB_outer[0] + nx * offset,
-        pB_outer[1] + ny * offset
-    )
-
-    coords = []
-
-    # inner arc (same)
-    coords.extend(inner_path)
-
-    # right vertical edge (perfect connection)
-    coords.append(pB_inner)
-    coords.append(pB_outer)
-
-    # outer straight (parallel)
-    coords.append(outer_B)
-    coords.append(outer_A)
-
-    # left vertical edge (perfect connection)
-    coords.append(pA_outer)
-    coords.append(pA_inner)
-
-    return Polygon(coords)
+    for j, line in enumerate(constants):
+        txt = msp.add_text(line, dxfattribs={"height": 3, "layer": "DIMS", "color": 3})
+        txt.dxf.insert = (text_x, text_y - j * 5)
 
 
 # ================= MAIN =================
@@ -161,16 +207,13 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
 
     msp = doc.modelspace()
 
-    # ===== DIM STYLE =====
     dimstyle = doc.dimstyles.new("EZ_DIM") if "EZ_DIM" not in doc.dimstyles else doc.dimstyles.get("EZ_DIM")
     dimstyle.dxf.dimdec = 4
     dimstyle.dxf.dimzin = 0
 
-    # ===== LINETYPE =====
     if "DASHED" not in doc.linetypes:
         doc.linetypes.add("DASHED", pattern=[0.5, 0.25, -0.25])
 
-    # ===== LAYERS =====
     doc.layers.add("WAFER", color=1, linetype="DASHED")
     doc.layers.add("RINGS", color=1, linetype="DASHED")
     doc.layers.add("FINGERS", color=7)
@@ -189,7 +232,6 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
         dxfattribs={"layer": "WAFER"}
     )
 
-    # ===== WAFER WIDTH =====
     msp.add_linear_dim(
         base=(minx, miny - OFFSET),
         p1=(minx, miny),
@@ -200,7 +242,6 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
 
     finger_radii = create_fingers(inner_diameter, outer_diameter)
 
-    # ================= LOOP =================
     for i, ring_data in enumerate(rings):
         cx, cy = ring_data["center"]
 
@@ -210,196 +251,17 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
         gx, gy = get_group_center(cx, cy, pitch)
         theta = get_theta(cx, cy, gx, gy)
 
-        # ===== OUTER RING =====
-        start_angle, end_angle = get_cut_angles(theta, cut_angle)
+        draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle)
+        draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii)
 
-        msp.add_arc((cx, cy), r_outer, start_angle, end_angle,
-                    dxfattribs={"layer": "RINGS", "linetype": "DASHED"})
-
-        p1, p2 = get_cut_endpoints(cx, cy, r_outer, theta, cut_angle)
-        msp.add_line(p1, p2, dxfattribs={"layer": "RINGS", "linetype": "DASHED"})
-
-        # ===== INNER RING =====
-        msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
-
-        # ===== FINGERS =====
-        for idx, r in enumerate(finger_radii):
-            r_outer_f = r
-            r_inner_f = r - FINGER_THICKNESS
-
-            if r_inner_f <= r_inner:
-                continue
-
-            local_angle = cut_angle
-
-            if idx == len(finger_radii) - 2:
-                local_angle *= 0.67
-            elif idx == len(finger_radii) - 3:
-                local_angle *= 0.93
-
-            cut_sector = create_cut_sector(cx, cy, r_outer * 1.5, theta, local_angle)
-
-            outer_poly = Point(cx, cy).buffer(r_outer_f, resolution=128)
-            inner_poly = Point(cx, cy).buffer(r_inner_f, resolution=128)
-
-            ring_poly = outer_poly.difference(inner_poly)
-
-            if idx == len(finger_radii) - 1:
-                finger_geom = ring_poly
-            else:
-                finger_geom = ring_poly.difference(cut_sector)
-
-            geom_list = [finger_geom]
-
-            if idx < len(finger_radii) - 1:
-                p1_outer, p2_outer = get_cut_endpoints(cx, cy, r_outer_f, theta, local_angle)
-                p1_inner, p2_inner = get_cut_endpoints(cx, cy, r_inner_f, theta, local_angle)
-
-                if idx == len(finger_radii) - 2:
-                    left_bridge, right_bridge, pA_outer, pB_outer, pA_inner, pB_inner = split_bridge_segments(
-                        p1_outer, p2_outer,
-                        p1_inner, p2_inner,
-                        ratio=0.15
-                    )
-
-                    middle_curve = create_middle_curve_bridge_exact(
-                        cx, cy,
-                        pA_outer, pB_outer,
-                        pA_inner, pB_inner
-                    )
-
-                    geom_list.append(left_bridge)
-                    geom_list.append(middle_curve)
-                    geom_list.append(right_bridge)
-                else:
-                    bridge = create_exact_bridge(p1_outer, p2_outer, p1_inner, p2_inner)
-                    geom_list.append(bridge)
-
-            merged = unary_union(geom_list).buffer(0)
-
-            for geom in getattr(merged, "geoms", [merged]):
-                coords = list(geom.exterior.coords)
-
-                msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
-
-                hatch = msp.add_hatch(color=7)
-                hatch.paths.add_polyline_path(coords, is_closed=True)
-
-                for interior in geom.interiors:
-                    hatch.paths.add_polyline_path(list(interior.coords), is_closed=True)
-
-        # ===== DIMENSIONS =====
         if i == 0:
-            ring_left = cx - r_outer
-            ring_bottom = cy - r_outer
+            draw_dimensions(msp, cx, cy, r_outer, r_inner,
+                            minx, miny, maxy, OFFSET,
+                            finger_radii, rings)
 
-            # ---- LEFT EDGE MARGIN ----
-            msp.add_linear_dim(
-                (minx - OFFSET - 30, cy),
-                (minx, cy),
-                (ring_left, cy),
-                dimstyle="EZ_DIM",
-                dxfattribs={"layer": "DIMS"}
-            ).render()
-
-            # ---- BOTTOM EDGE MARGIN ----
-            msp.add_linear_dim(
-                (cx, miny - OFFSET - 40),
-                (cx, miny),
-                (cx, ring_bottom),
-                angle=90,
-                dimstyle="EZ_DIM",
-                dxfattribs={"layer": "DIMS"}
-            ).render()
-
-            # ---- OUTER DIAMETER ----
-            msp.add_diameter_dim(
-                center=(cx, cy),
-                mpoint=(cx, cy - r_outer),
-                dimstyle="EZ_DIM",
-                dxfattribs={"layer": "DIMS"}
-            ).render()
-
-            # ---- INNER DIAMETER ----
-            msp.add_diameter_dim(
-                center=(cx, cy),
-                mpoint=(cx - r_inner, cy),
-                dimstyle="EZ_DIM",
-                dxfattribs={"layer": "DIMS"}
-            ).render()
-
-            # ---- FINGER TO RING ----
-            if len(finger_radii) >= 1:
-                first_r = finger_radii[0]
-
-                first_inner = first_r - FINGER_THICKNESS
-
-                msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 10),
-                    p1=(cx + r_outer, cy),  # outer ring edge
-                    p2=(cx + first_inner, cy),  # first finger inner edge
-                    dimstyle="EZ_DIM",
-                    dxfattribs={"layer": "DIMS"}
-                ).render()
-
-            # ---- FINGER SPACING ----
-            if len(finger_radii) >= 2:
-                r1 = finger_radii[0]
-                r2 = finger_radii[1]
-                inner_r1 = r1 - FINGER_THICKNESS
-
-                msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET),
-                    p1=(cx + inner_r1, cy),
-                    p2=(cx + r2, cy),
-                    dimstyle="EZ_DIM",
-                    dxfattribs={"layer": "DIMS"}
-                ).render()
-
-            # ---- RING SPACING ----
-            if len(rings) > 1:
-                cx2, cy2 = rings[1]["center"]
-
-                msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 20),
-                    p1=(cx + r_outer, cy),
-                    p2=(cx2 - r_outer, cy),
-                    dimstyle="EZ_DIM",
-                    dxfattribs={"layer": "DIMS"}
-                ).render()
-
-            # ---- FINGER THICKNESS ----
-            if len(finger_radii) >= 1:
-                r = finger_radii[0]
-
-                msp.add_linear_dim(
-                    base=(cx, maxy + OFFSET + 40),
-                    p1=(cx + r, cy),
-                    p2=(cx + r - FINGER_THICKNESS, cy),
-                    dimstyle="EZ_DIM",
-                    dxfattribs={"layer": "DIMS"}
-                ).render()
-
-        # ===== CONSTANTS PANEL =====
-        text_x = maxx + 60
-        text_y = maxy
-
-        constants = [
-            f"WAFER_SIZE = {(maxx - minx):.4f}",
-            f"OUTER_DIAMETER = {outer_diameter:.4f}",
-            f"INNER_DIAMETER = {inner_diameter:.4f}",
-            f"RING_SPACING = {RING_SPACING:.4f}",
-            f"MIN_EDGE_MARGIN = {EDGE_MARGIN:.4f}",
-            f"ACTUAL_MARGIN_X = {actual_margin_x:.4f}",
-            f"ACTUAL_MARGIN_Y = {actual_margin_y:.4f}",
-            f"FINGER_THICKNESS = {FINGER_THICKNESS:.4f}",
-            f"FINGER_SPACING = {FINGER_SPACING:.4f}",
-            f"FINGER_TO_RING = {FINGER_TO_RING:.4f}",
-        ]
-
-        for j, line in enumerate(constants):
-            txt = msp.add_text(line, dxfattribs={"height": 3, "layer": "DIMS", "color": 3})
-            txt.dxf.insert = (text_x, text_y - j * 5)
+    draw_constants_panel(msp, minx, maxx, maxy,
+                         outer_diameter, inner_diameter,
+                         actual_margin_x, actual_margin_y)
 
     doc.saveas(f"data/{filename}.dxf")
     print("DXF file saved!")
