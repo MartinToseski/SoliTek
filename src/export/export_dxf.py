@@ -10,13 +10,14 @@ from src.geometry.utils import get_group_center, get_theta, get_cut_angles
 
 # ================= DRAW HELPERS =================
 
-def draw_merged_geometry(msp, merged):
+def draw_merged_geometry(msp, merged, layer_name):
     for geom in getattr(merged, "geoms", [merged]):
         coords = list(geom.exterior.coords)
 
-        msp.add_lwpolyline(coords, dxfattribs={"layer": "FINGERS"})
+        msp.add_lwpolyline(coords, dxfattribs={"layer": layer_name})
 
         hatch = msp.add_hatch(color=7)
+        hatch.dxf.layer = layer_name
         hatch.paths.add_polyline_path(coords, is_closed=True)
 
         for interior in geom.interiors:
@@ -37,6 +38,11 @@ def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
 
 def draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii):
     for idx, r in enumerate(finger_radii):
+        if idx == 0 or idx == 3:
+            layer_name = "FINGER_BASE"  # outer 2
+        else:
+            layer_name = "FINGER_EMITTER"  # middle 2
+
         r_outer_f = r
         r_inner_f = r - FINGER_THICKNESS
 
@@ -87,7 +93,7 @@ def draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii):
                 geom_list.append(bridge)
 
         merged = unary_union(geom_list).buffer(0)
-        draw_merged_geometry(msp, merged)
+        draw_merged_geometry(msp, merged, layer_name)
 
 
 def draw_dimensions(msp, cx, cy, r_outer, r_inner, minx, miny, maxy, OFFSET, finger_radii, rings):
@@ -216,7 +222,8 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
 
     doc.layers.add("WAFER", color=1, linetype="DASHED")
     doc.layers.add("RINGS", color=1, linetype="DASHED")
-    doc.layers.add("FINGERS", color=7)
+    doc.layers.add("FINGER_BASE", color=7)
+    doc.layers.add("FINGER_EMITTER", color=7)
     doc.layers.add("DIMS", color=3)
 
     OFFSET = 25
