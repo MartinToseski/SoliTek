@@ -493,7 +493,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461154.5702546295
+2461154.6117476854
   9
 $TDUCREATE
  40
@@ -501,7 +501,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461154.5702546295
+2461154.6117476854
   9
 $TDUUPDATE
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-21D
+187
   9
 $SURFTAB1
  70
@@ -933,11 +933,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{BE81BE32-C423-4D91-9CCA-3678CAE0ACD6}
+{38B8FE13-A736-4887-A77D-03AFEDF96575}
   9
 $VERSIONGUID
   2
-{9508BA32-C00E-4818-A726-AE1349FCABF0}
+{E5B11A8E-2C3A-4F00-B165-321174207538}
   9
 $EXTNAMES
 290
@@ -1327,9 +1327,9 @@ ISM
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -1343,9 +1343,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -1831,7 +1831,7 @@ ACAD
   0
 APPID
   5
-21A
+184
 330
 3
 100
@@ -1845,7 +1845,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-21B
+185
 330
 3
 100
@@ -3763,13 +3763,13 @@ AcDbEntity
 100
 AcDbLine
  10
-39.39665000000002
+39.421650000000014
  20
 20.949250000000017
  30
 0.0
  11
-39.39665000000002
+39.421650000000014
  21
 193.75
  31
@@ -3813,7 +3813,7 @@ AcDbBlockReference
   2
 _CLOSEDFILLED
  10
-39.39665000000002
+39.421650000000014
  20
 193.75
  30
@@ -3861,13 +3861,13 @@ AcDbEntity
 100
 AcDbLine
  10
-39.14665000000002
+39.171650000000014
  20
 193.75
  30
 0.0
  11
-38.89665000000002
+38.921650000000014
  21
 193.75
  31
@@ -3891,7 +3891,7 @@ AcDbLine
  30
 0.0
  11
-39.39665000000002
+39.421650000000014
  21
 193.75
  31
@@ -3909,7 +3909,7 @@ DIMS
 100
 AcDbMText
  10
-39.53795000000002
+39.55045000000001
  20
 192.625
  30
@@ -3919,7 +3919,7 @@ AcDbMText
  71
 5
   1
-0,2826
+0,2576
   0
 POINT
   5
@@ -3969,7 +3969,7 @@ Defpoints
 100
 AcDbPoint
  10
-39.39665000000002
+39.421650000000014
  20
 20.949250000000017
  30
@@ -33213,7 +33213,7 @@ EZ_DIM
  30
 0.0
  11
-39.53795000000002
+39.55045000000001
  21
 192.625
  31
@@ -33233,7 +33233,7 @@ AcDbAlignedDimension
  33
 0.0
  14
-39.39665000000002
+39.421650000000014
  24
 20.949250000000017
  34
@@ -33405,269 +33405,9 @@ AcDbAlignedDimension
 100
 AcDbRotatedDimension
   0
-TEXT
-  5
-D1
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-D2
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-D3
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-D4
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-D5
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-D6
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-D7
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-D8
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-D9
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-DA
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-DB
+D1
 330
 17
 100
@@ -33695,7 +33435,7 @@ AcDbArc
   0
 LINE
   5
-DC
+D2
 330
 17
 100
@@ -33721,7 +33461,7 @@ AcDbLine
   0
 CIRCLE
   5
-DD
+D3
 330
 17
 100
@@ -33741,7 +33481,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-DE
+D4
 330
 17
 100
@@ -35657,7 +35397,7 @@ AcDbPolyline
   0
 HATCH
   5
-DF
+D5
 330
 17
 100
@@ -39513,7 +39253,7 @@ SOLID
   0
 LWPOLYLINE
   5
-E0
+D6
 330
 17
 100
@@ -43353,7 +43093,7 @@ AcDbPolyline
   0
 HATCH
   5
-E1
+D7
 330
 17
 100
@@ -47227,7 +46967,7 @@ SOLID
   0
 LWPOLYLINE
   5
-E2
+D8
 330
 17
 100
@@ -49215,7 +48955,7 @@ AcDbPolyline
   0
 HATCH
   5
-E3
+D9
 330
 17
 100
@@ -53367,7 +53107,7 @@ SOLID
   0
 LWPOLYLINE
   5
-E4
+DA
 330
 17
 100
@@ -55435,7 +55175,7 @@ AcDbPolyline
   0
 HATCH
   5
-E5
+DB
 330
 17
 100
@@ -59597,269 +59337,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-E6
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-E7
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-E8
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-E9
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-EA
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-EB
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-EC
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-ED
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-EE
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-EF
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-F0
+DC
 330
 17
 100
@@ -59887,7 +59367,7 @@ AcDbArc
   0
 LINE
   5
-F1
+DD
 330
 17
 100
@@ -59913,7 +59393,7 @@ AcDbLine
   0
 CIRCLE
   5
-F2
+DE
 330
 17
 100
@@ -59933,7 +59413,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-F3
+DF
 330
 17
 100
@@ -63741,7 +63221,7 @@ AcDbPolyline
   0
 HATCH
   5
-F4
+E0
 330
 17
 100
@@ -67583,7 +67063,7 @@ SOLID
   0
 LWPOLYLINE
   5
-F5
+E1
 330
 17
 100
@@ -71403,7 +70883,7 @@ AcDbPolyline
   0
 HATCH
   5
-F6
+E2
 330
 17
 100
@@ -75257,7 +74737,7 @@ SOLID
   0
 LWPOLYLINE
   5
-F7
+E3
 330
 17
 100
@@ -75293,7 +74773,7 @@ AcDbPolyline
   0
 HATCH
   5
-F8
+E4
 330
 17
 100
@@ -75363,7 +74843,7 @@ SOLID
   0
 LWPOLYLINE
   5
-F9
+E5
 330
 17
 100
@@ -79467,7 +78947,7 @@ AcDbPolyline
   0
 HATCH
   5
-FA
+E6
 330
 17
 100
@@ -83605,7 +83085,7 @@ SOLID
   0
 LWPOLYLINE
   5
-FB
+E7
 330
 17
 100
@@ -85673,7 +85153,7 @@ AcDbPolyline
   0
 HATCH
   5
-FC
+E8
 330
 17
 100
@@ -89835,269 +89315,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-FD
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-FE
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-FF
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-100
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-101
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-102
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-103
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-104
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-105
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-106
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-107
+E9
 330
 17
 100
@@ -90125,7 +89345,7 @@ AcDbArc
   0
 LINE
   5
-108
+EA
 330
 17
 100
@@ -90151,7 +89371,7 @@ AcDbLine
   0
 CIRCLE
   5
-109
+EB
 330
 17
 100
@@ -90171,7 +89391,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-10A
+EC
 330
 17
 100
@@ -92083,7 +91303,7 @@ AcDbPolyline
   0
 HATCH
   5
-10B
+ED
 330
 17
 100
@@ -95935,7 +95155,7 @@ SOLID
   0
 LWPOLYLINE
   5
-10C
+EE
 330
 17
 100
@@ -99771,7 +98991,7 @@ AcDbPolyline
   0
 HATCH
   5
-10D
+EF
 330
 17
 100
@@ -103641,7 +102861,7 @@ SOLID
   0
 LWPOLYLINE
   5
-10E
+F0
 330
 17
 100
@@ -107741,7 +106961,7 @@ AcDbPolyline
   0
 HATCH
   5
-10F
+F1
 330
 17
 100
@@ -111875,7 +111095,7 @@ SOLID
   0
 LWPOLYLINE
   5
-110
+F2
 330
 17
 100
@@ -113943,7 +113163,7 @@ AcDbPolyline
   0
 HATCH
   5
-111
+F3
 330
 17
 100
@@ -118105,269 +117325,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-112
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-113
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-114
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-115
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-116
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-117
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-118
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-119
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-11A
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-11B
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-11C
+F4
 330
 17
 100
@@ -118395,7 +117355,7 @@ AcDbArc
   0
 LINE
   5
-11D
+F5
 330
 17
 100
@@ -118421,7 +117381,7 @@ AcDbLine
   0
 CIRCLE
   5
-11E
+F6
 330
 17
 100
@@ -118441,7 +117401,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-11F
+F7
 330
 17
 100
@@ -120357,7 +119317,7 @@ AcDbPolyline
   0
 HATCH
   5
-120
+F8
 330
 17
 100
@@ -124213,7 +123173,7 @@ SOLID
   0
 LWPOLYLINE
   5
-121
+F9
 330
 17
 100
@@ -126145,7 +125105,7 @@ AcDbPolyline
   0
 HATCH
   5
-122
+FA
 330
 17
 100
@@ -130037,7 +128997,7 @@ SOLID
   0
 LWPOLYLINE
   5
-123
+FB
 330
 17
 100
@@ -134137,7 +133097,7 @@ AcDbPolyline
   0
 HATCH
   5
-124
+FC
 330
 17
 100
@@ -138271,7 +137231,7 @@ SOLID
   0
 LWPOLYLINE
   5
-125
+FD
 330
 17
 100
@@ -140339,7 +139299,7 @@ AcDbPolyline
   0
 HATCH
   5
-126
+FE
 330
 17
 100
@@ -144501,269 +143461,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-127
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-128
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-129
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-12A
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-12B
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-12C
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-12D
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-12E
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-12F
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-130
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-131
+FF
 330
 17
 100
@@ -144791,7 +143491,7 @@ AcDbArc
   0
 LINE
   5
-132
+100
 330
 17
 100
@@ -144817,7 +143517,7 @@ AcDbLine
   0
 CIRCLE
   5
-133
+101
 330
 17
 100
@@ -144837,7 +143537,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-134
+102
 330
 17
 100
@@ -148645,7 +147345,7 @@ AcDbPolyline
   0
 HATCH
   5
-135
+103
 330
 17
 100
@@ -152487,7 +151187,7 @@ SOLID
   0
 LWPOLYLINE
   5
-136
+104
 330
 17
 100
@@ -156327,7 +155027,7 @@ AcDbPolyline
   0
 HATCH
   5
-137
+105
 330
 17
 100
@@ -160201,7 +158901,7 @@ SOLID
   0
 LWPOLYLINE
   5
-138
+106
 330
 17
 100
@@ -162185,7 +160885,7 @@ AcDbPolyline
   0
 HATCH
   5
-139
+107
 330
 17
 100
@@ -166333,7 +165033,7 @@ SOLID
   0
 LWPOLYLINE
   5
-13A
+108
 330
 17
 100
@@ -168401,7 +167101,7 @@ AcDbPolyline
   0
 HATCH
   5
-13B
+109
 330
 17
 100
@@ -172563,269 +171263,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-13C
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-13D
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-13E
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-13F
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-140
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-141
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-142
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-143
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-144
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-145
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-146
+10A
 330
 17
 100
@@ -172853,7 +171293,7 @@ AcDbArc
   0
 LINE
   5
-147
+10B
 330
 17
 100
@@ -172879,7 +171319,7 @@ AcDbLine
   0
 CIRCLE
   5
-148
+10C
 330
 17
 100
@@ -172899,7 +171339,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-149
+10D
 330
 17
 100
@@ -174815,7 +173255,7 @@ AcDbPolyline
   0
 HATCH
   5
-14A
+10E
 330
 17
 100
@@ -178671,7 +177111,7 @@ SOLID
   0
 LWPOLYLINE
   5
-14B
+10F
 330
 17
 100
@@ -180599,7 +179039,7 @@ AcDbPolyline
   0
 HATCH
   5
-14C
+110
 330
 17
 100
@@ -184491,7 +182931,7 @@ SOLID
   0
 LWPOLYLINE
   5
-14D
+111
 330
 17
 100
@@ -188591,7 +187031,7 @@ AcDbPolyline
   0
 HATCH
   5
-14E
+112
 330
 17
 100
@@ -192725,7 +191165,7 @@ SOLID
   0
 LWPOLYLINE
   5
-14F
+113
 330
 17
 100
@@ -194793,7 +193233,7 @@ AcDbPolyline
   0
 HATCH
   5
-150
+114
 330
 17
 100
@@ -198955,269 +197395,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-151
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-152
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-153
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-154
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-155
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-156
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-157
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-158
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-159
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-15A
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-15B
+115
 330
 17
 100
@@ -199245,7 +197425,7 @@ AcDbArc
   0
 LINE
   5
-15C
+116
 330
 17
 100
@@ -199271,7 +197451,7 @@ AcDbLine
   0
 CIRCLE
   5
-15D
+117
 330
 17
 100
@@ -199291,7 +197471,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-15E
+118
 330
 17
 100
@@ -203095,7 +201275,7 @@ AcDbPolyline
   0
 HATCH
   5
-15F
+119
 330
 17
 100
@@ -206933,7 +205113,7 @@ SOLID
   0
 LWPOLYLINE
   5
-160
+11A
 330
 17
 100
@@ -208869,7 +207049,7 @@ AcDbPolyline
   0
 HATCH
   5
-161
+11B
 330
 17
 100
@@ -212761,7 +210941,7 @@ SOLID
   0
 LWPOLYLINE
   5
-162
+11C
 330
 17
 100
@@ -214749,7 +212929,7 @@ AcDbPolyline
   0
 HATCH
   5
-163
+11D
 330
 17
 100
@@ -218901,7 +217081,7 @@ SOLID
   0
 LWPOLYLINE
   5
-164
+11E
 330
 17
 100
@@ -220969,7 +219149,7 @@ AcDbPolyline
   0
 HATCH
   5
-165
+11F
 330
 17
 100
@@ -225131,269 +223311,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-166
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-167
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-168
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-169
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-16A
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-16B
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-16C
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-16D
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-16E
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-16F
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-170
+120
 330
 17
 100
@@ -225421,7 +223341,7 @@ AcDbArc
   0
 LINE
   5
-171
+121
 330
 17
 100
@@ -225447,7 +223367,7 @@ AcDbLine
   0
 CIRCLE
   5
-172
+122
 330
 17
 100
@@ -225467,7 +223387,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-173
+123
 330
 17
 100
@@ -229271,7 +227191,7 @@ AcDbPolyline
   0
 HATCH
   5
-174
+124
 330
 17
 100
@@ -233109,7 +231029,7 @@ SOLID
   0
 LWPOLYLINE
   5
-175
+125
 330
 17
 100
@@ -235037,7 +232957,7 @@ AcDbPolyline
   0
 HATCH
   5
-176
+126
 330
 17
 100
@@ -238929,7 +236849,7 @@ SOLID
   0
 LWPOLYLINE
   5
-177
+127
 330
 17
 100
@@ -243033,7 +240953,7 @@ AcDbPolyline
   0
 HATCH
   5
-178
+128
 330
 17
 100
@@ -247171,7 +245091,7 @@ SOLID
   0
 LWPOLYLINE
   5
-179
+129
 330
 17
 100
@@ -249239,7 +247159,7 @@ AcDbPolyline
   0
 HATCH
   5
-17A
+12A
 330
 17
 100
@@ -253401,269 +251321,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-17B
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-17C
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-17D
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-17E
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-17F
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-180
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-181
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-182
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-183
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-184
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-185
+12B
 330
 17
 100
@@ -253691,7 +251351,7 @@ AcDbArc
   0
 LINE
   5
-186
+12C
 330
 17
 100
@@ -253717,7 +251377,7 @@ AcDbLine
   0
 CIRCLE
   5
-187
+12D
 330
 17
 100
@@ -253737,7 +251397,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-188
+12E
 330
 17
 100
@@ -255653,7 +253313,7 @@ AcDbPolyline
   0
 HATCH
   5
-189
+12F
 330
 17
 100
@@ -259509,7 +257169,7 @@ SOLID
   0
 LWPOLYLINE
   5
-18A
+130
 330
 17
 100
@@ -261441,7 +259101,7 @@ AcDbPolyline
   0
 HATCH
   5
-18B
+131
 330
 17
 100
@@ -265329,7 +262989,7 @@ SOLID
   0
 LWPOLYLINE
   5
-18C
+132
 330
 17
 100
@@ -267321,7 +264981,7 @@ AcDbPolyline
   0
 HATCH
   5
-18D
+133
 330
 17
 100
@@ -271477,7 +269137,7 @@ SOLID
   0
 LWPOLYLINE
   5
-18E
+134
 330
 17
 100
@@ -273545,7 +271205,7 @@ AcDbPolyline
   0
 HATCH
   5
-18F
+135
 330
 17
 100
@@ -277707,269 +275367,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-190
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-191
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-192
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-193
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-194
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-195
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-196
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-197
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-198
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-199
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-19A
+136
 330
 17
 100
@@ -277997,7 +275397,7 @@ AcDbArc
   0
 LINE
   5
-19B
+137
 330
 17
 100
@@ -278023,7 +275423,7 @@ AcDbLine
   0
 CIRCLE
   5
-19C
+138
 330
 17
 100
@@ -278043,7 +275443,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-19D
+139
 330
 17
 100
@@ -279955,7 +277355,7 @@ AcDbPolyline
   0
 HATCH
   5
-19E
+13A
 330
 17
 100
@@ -283811,7 +281211,7 @@ SOLID
   0
 LWPOLYLINE
   5
-19F
+13B
 330
 17
 100
@@ -285739,7 +283139,7 @@ AcDbPolyline
   0
 HATCH
   5
-1A0
+13C
 330
 17
 100
@@ -289631,7 +287031,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1A1
+13D
 330
 17
 100
@@ -291623,7 +289023,7 @@ AcDbPolyline
   0
 HATCH
   5
-1A2
+13E
 330
 17
 100
@@ -295775,7 +293175,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1A3
+13F
 330
 17
 100
@@ -297843,7 +295243,7 @@ AcDbPolyline
   0
 HATCH
   5
-1A4
+140
 330
 17
 100
@@ -302005,269 +299405,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-1A5
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-1A6
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-1A7
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-1A8
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-1A9
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-1AA
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1AB
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1AC
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-1AD
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-1AE
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-1AF
+141
 330
 17
 100
@@ -302295,7 +299435,7 @@ AcDbArc
   0
 LINE
   5
-1B0
+142
 330
 17
 100
@@ -302321,7 +299461,7 @@ AcDbLine
   0
 CIRCLE
   5
-1B1
+143
 330
 17
 100
@@ -302341,7 +299481,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1B2
+144
 330
 17
 100
@@ -304257,7 +301397,7 @@ AcDbPolyline
   0
 HATCH
   5
-1B3
+145
 330
 17
 100
@@ -308113,7 +305253,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1B4
+146
 330
 17
 100
@@ -310041,7 +307181,7 @@ AcDbPolyline
   0
 HATCH
   5
-1B5
+147
 330
 17
 100
@@ -313929,7 +311069,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1B6
+148
 330
 17
 100
@@ -318033,7 +315173,7 @@ AcDbPolyline
   0
 HATCH
   5
-1B7
+149
 330
 17
 100
@@ -322171,7 +319311,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1B8
+14A
 330
 17
 100
@@ -324239,7 +321379,7 @@ AcDbPolyline
   0
 HATCH
   5
-1B9
+14B
 330
 17
 100
@@ -328401,269 +325541,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-1BA
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-1BB
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-1BC
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-1BD
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-1BE
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-1BF
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1C0
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1C1
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-1C2
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-1C3
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-1C4
+14C
 330
 17
 100
@@ -328691,7 +325571,7 @@ AcDbArc
   0
 LINE
   5
-1C5
+14D
 330
 17
 100
@@ -328717,7 +325597,7 @@ AcDbLine
   0
 CIRCLE
   5
-1C6
+14E
 330
 17
 100
@@ -328737,7 +325617,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1C7
+14F
 330
 17
 100
@@ -332545,7 +329425,7 @@ AcDbPolyline
   0
 HATCH
   5
-1C8
+150
 330
 17
 100
@@ -336387,7 +333267,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1C9
+151
 330
 17
 100
@@ -338319,7 +335199,7 @@ AcDbPolyline
   0
 HATCH
   5
-1CA
+152
 330
 17
 100
@@ -342207,7 +339087,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1CB
+153
 330
 17
 100
@@ -344195,7 +341075,7 @@ AcDbPolyline
   0
 HATCH
   5
-1CC
+154
 330
 17
 100
@@ -348343,7 +345223,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1CD
+155
 330
 17
 100
@@ -350411,7 +347291,7 @@ AcDbPolyline
   0
 HATCH
   5
-1CE
+156
 330
 17
 100
@@ -354573,269 +351453,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-1CF
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-1D0
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-1D1
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-1D2
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-1D3
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-1D4
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1D5
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1D6
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-1D7
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-1D8
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-1D9
+157
 330
 17
 100
@@ -354863,7 +351483,7 @@ AcDbArc
   0
 LINE
   5
-1DA
+158
 330
 17
 100
@@ -354889,7 +351509,7 @@ AcDbLine
   0
 CIRCLE
   5
-1DB
+159
 330
 17
 100
@@ -354909,7 +351529,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1DC
+15A
 330
 17
 100
@@ -356829,7 +353449,7 @@ AcDbPolyline
   0
 HATCH
   5
-1DD
+15B
 330
 17
 100
@@ -360689,7 +357309,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1DE
+15C
 330
 17
 100
@@ -362617,7 +359237,7 @@ AcDbPolyline
   0
 HATCH
   5
-1DF
+15D
 330
 17
 100
@@ -366505,7 +363125,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1E0
+15E
 330
 17
 100
@@ -370601,7 +367221,7 @@ AcDbPolyline
   0
 HATCH
   5
-1E1
+15F
 330
 17
 100
@@ -374731,7 +371351,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1E2
+160
 330
 17
 100
@@ -376799,7 +373419,7 @@ AcDbPolyline
   0
 HATCH
   5
-1E3
+161
 330
 17
 100
@@ -380961,269 +377581,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-1E4
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-1E5
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-1E6
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-1E7
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-1E8
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-1E9
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1EA
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-1EB
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-1EC
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-1ED
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-1EE
+162
 330
 17
 100
@@ -381251,7 +377611,7 @@ AcDbArc
   0
 LINE
   5
-1EF
+163
 330
 17
 100
@@ -381277,7 +377637,7 @@ AcDbLine
   0
 CIRCLE
   5
-1F0
+164
 330
 17
 100
@@ -381297,7 +377657,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1F1
+165
 330
 17
 100
@@ -383213,7 +379573,7 @@ AcDbPolyline
   0
 HATCH
   5
-1F2
+166
 330
 17
 100
@@ -387069,7 +383429,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1F3
+167
 330
 17
 100
@@ -390889,7 +387249,7 @@ AcDbPolyline
   0
 HATCH
   5
-1F4
+168
 330
 17
 100
@@ -394743,7 +391103,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1F5
+169
 330
 17
 100
@@ -394779,7 +391139,7 @@ AcDbPolyline
   0
 HATCH
   5
-1F6
+16A
 330
 17
 100
@@ -394849,7 +391209,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1F7
+16B
 330
 17
 100
@@ -398949,7 +395309,7 @@ AcDbPolyline
   0
 HATCH
   5
-1F8
+16C
 330
 17
 100
@@ -403083,7 +399443,7 @@ SOLID
   0
 LWPOLYLINE
   5
-1F9
+16D
 330
 17
 100
@@ -405151,7 +401511,7 @@ AcDbPolyline
   0
 HATCH
   5
-1FA
+16E
 330
 17
 100
@@ -409313,269 +405673,9 @@ SOLID
  98
 0
   0
-TEXT
-  5
-1FB
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-158.75
- 30
-0.0
- 40
-3.0
-  1
-WAFER_SIZE = 158.7500
-100
-AcDbText
-  0
-TEXT
-  5
-1FC
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-153.75
- 30
-0.0
- 40
-3.0
-  1
-OUTER_DIAMETER = 37.4600
-100
-AcDbText
-  0
-TEXT
-  5
-1FD
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-148.75
- 30
-0.0
- 40
-3.0
-  1
-INNER_DIAMETER = 33.2600
-100
-AcDbText
-  0
-TEXT
-  5
-1FE
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-143.75
- 30
-0.0
- 40
-3.0
-  1
-RING_SPACING = 1.4905
-100
-AcDbText
-  0
-TEXT
-  5
-1FF
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-138.75
- 30
-0.0
- 40
-3.0
-  1
-MIN_EDGE_MARGIN = 2.1965
-100
-AcDbText
-  0
-TEXT
-  5
-200
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-133.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_X = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-201
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-128.75
- 30
-0.0
- 40
-3.0
-  1
-ACTUAL_MARGIN_Y = 2.2193
-100
-AcDbText
-  0
-TEXT
-  5
-202
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-123.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_THICKNESS = 0.0250
-100
-AcDbText
-  0
-TEXT
-  5
-203
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-118.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_SPACING = 0.4899
-100
-AcDbText
-  0
-TEXT
-  5
-204
-330
-17
-100
-AcDbEntity
-  8
-DIMS
- 62
-3
-100
-AcDbText
- 10
-218.75
- 20
-113.75
- 30
-0.0
- 40
-3.0
-  1
-FINGER_TO_RING = 0.2576
-100
-AcDbText
-  0
 ARC
   5
-205
+16F
 330
 17
 100
@@ -409603,7 +405703,7 @@ AcDbArc
   0
 LINE
   5
-206
+170
 330
 17
 100
@@ -409629,7 +405729,7 @@ AcDbLine
   0
 CIRCLE
   5
-207
+171
 330
 17
 100
@@ -409649,7 +405749,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-208
+172
 330
 17
 100
@@ -411561,7 +407661,7 @@ AcDbPolyline
   0
 HATCH
   5
-209
+173
 330
 17
 100
@@ -415413,7 +411513,7 @@ SOLID
   0
 LWPOLYLINE
   5
-20A
+174
 330
 17
 100
@@ -419253,7 +415353,7 @@ AcDbPolyline
   0
 HATCH
   5
-20B
+175
 330
 17
 100
@@ -423127,7 +419227,7 @@ SOLID
   0
 LWPOLYLINE
   5
-20C
+176
 330
 17
 100
@@ -425111,7 +421211,7 @@ AcDbPolyline
   0
 HATCH
   5
-20D
+177
 330
 17
 100
@@ -429259,7 +425359,7 @@ SOLID
   0
 LWPOLYLINE
   5
-20E
+178
 330
 17
 100
@@ -431327,7 +427427,7 @@ AcDbPolyline
   0
 HATCH
   5
-20F
+179
 330
 17
 100
@@ -435491,7 +431591,7 @@ SOLID
   0
 TEXT
   5
-210
+17A
 330
 17
 100
@@ -435517,7 +431617,7 @@ AcDbText
   0
 TEXT
   5
-211
+17B
 330
 17
 100
@@ -435543,7 +431643,7 @@ AcDbText
   0
 TEXT
   5
-212
+17C
 330
 17
 100
@@ -435569,7 +431669,7 @@ AcDbText
   0
 TEXT
   5
-213
+17D
 330
 17
 100
@@ -435595,7 +431695,7 @@ AcDbText
   0
 TEXT
   5
-214
+17E
 330
 17
 100
@@ -435621,7 +431721,7 @@ AcDbText
   0
 TEXT
   5
-215
+17F
 330
 17
 100
@@ -435647,7 +431747,7 @@ AcDbText
   0
 TEXT
   5
-216
+180
 330
 17
 100
@@ -435673,7 +431773,7 @@ AcDbText
   0
 TEXT
   5
-217
+181
 330
 17
 100
@@ -435699,7 +431799,7 @@ AcDbText
   0
 TEXT
   5
-218
+182
 330
 17
 100
@@ -435725,7 +431825,7 @@ AcDbText
   0
 TEXT
   5
-219
+183
 330
 17
 100
@@ -436739,7 +432839,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-21C
+186
   0
 DICTIONARYVAR
   5
@@ -436751,11 +432851,11 @@ DictionaryVariables
 280
 0
   1
-1.4.3 @ 2026-04-23T10:41:10.154055+00:00
+1.4.3 @ 2026-04-23T11:40:55.249861+00:00
   0
 DICTIONARYVAR
   5
-21C
+186
 330
 2D
 100
@@ -436763,7 +432863,7 @@ DictionaryVariables
 280
 0
   1
-1.4.3 @ 2026-04-23T10:41:10.429605+00:00
+1.4.3 @ 2026-04-23T11:40:55.514375+00:00
   0
 ENDSEC
   0
