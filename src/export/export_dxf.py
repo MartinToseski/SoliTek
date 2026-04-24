@@ -1,3 +1,4 @@
+import math
 import ezdxf
 from shapely.geometry import Point
 from shapely.ops import unary_union
@@ -36,12 +37,73 @@ def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
     msp.add_circle((cx, cy), r_inner, dxfattribs={"layer": "RINGS"})
 
 
+# ================= CONTACT PAD =================
+
+def draw_contact_pad_from_geom(msp, merged):
+    size = FINGER_THICKNESS
+    half = size / 2
+    spacing = size * 4  # density control
+
+    for geom in getattr(merged, "geoms", [merged]):
+
+        line = geom.exterior  # ensures SINGLE row
+
+        length = line.length
+        d = 0
+
+        while d < length:
+            p = line.interpolate(d)
+            p_next = line.interpolate(min(d + 0.01, length))
+
+            x, y = p.x, p.y
+            x2, y2 = p_next.x, p_next.y
+
+            dx = x2 - x
+            dy = y2 - y
+            l = math.hypot(dx, dy)
+
+            if l == 0:
+                d += spacing
+                continue
+
+            ux = dx / l
+            uy = dy / l
+
+            # inward normal (center of finger)
+            nx = -uy
+            ny = ux
+
+            px = x + nx * (FINGER_THICKNESS / 2)
+            py = y + ny * (FINGER_THICKNESS / 2)
+
+            rot = math.atan2(dy, dx)
+            cos_r = math.cos(rot)
+            sin_r = math.sin(rot)
+
+            square = []
+            for dx_, dy_ in [
+                (-half, -half), (half, -half),
+                (half, half), (-half, half),
+                (-half, -half)
+            ]:
+                rx = px + dx_ * cos_r - dy_ * sin_r
+                ry = py + dx_ * sin_r + dy_ * cos_r
+                square.append((rx, ry))
+
+            msp.add_lwpolyline(square, dxfattribs={"layer": "CONTACT_PAD"})
+
+            d += spacing
+
+
+# ================= FINGERS =================
+
 def draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii):
     for idx, r in enumerate(finger_radii):
+
         if idx == 0 or idx == 3:
-            layer_name = "FINGER_BASE"  # outer 2
+            layer_name = "FINGER_BASE"
         else:
-            layer_name = "FINGER_EMITTER"  # middle 2
+            layer_name = "FINGER_EMITTER"
 
         r_outer_f = r
         r_inner_f = r - FINGER_THICKNESS
@@ -93,90 +155,71 @@ def draw_fingers(msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii):
                 geom_list.append(bridge)
 
         merged = unary_union(geom_list).buffer(0)
+
         draw_merged_geometry(msp, merged, layer_name)
 
+        # ✅ CORRECT placement — pads follow full geometry
+        draw_contact_pad_from_geom(msp, merged)
+
+
+# ================= DIMENSIONS =================
 
 def draw_dimensions(msp, cx, cy, r_outer, r_inner, minx, miny, maxy, OFFSET, finger_radii, rings):
     ring_left = cx - r_outer
     ring_bottom = cy - r_outer
 
-    msp.add_linear_dim(
-        (minx - OFFSET - 30, cy),
-        (minx, cy),
-        (ring_left, cy),
-        dimstyle="EZ_DIM",
-        dxfattribs={"layer": "DIMS"}
-    ).render()
+    msp.add_linear_dim((minx - OFFSET - 30, cy), (minx, cy), (ring_left, cy),
+                       dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
 
-    msp.add_linear_dim(
-        (cx, miny - OFFSET - 40),
-        (cx, miny),
-        (cx, ring_bottom),
-        angle=90,
-        dimstyle="EZ_DIM",
-        dxfattribs={"layer": "DIMS"}
-    ).render()
+    msp.add_linear_dim((cx, miny - OFFSET - 40), (cx, miny), (cx, ring_bottom),
+                       angle=90, dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
 
-    msp.add_diameter_dim(
-        center=(cx, cy),
-        mpoint=(cx, cy - r_outer),
-        dimstyle="EZ_DIM",
-        dxfattribs={"layer": "DIMS"}
-    ).render()
+    msp.add_diameter_dim(center=(cx, cy), mpoint=(cx, cy - r_outer),
+                         dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
 
-    msp.add_diameter_dim(
-        center=(cx, cy),
-        mpoint=(cx - r_inner, cy),
-        dimstyle="EZ_DIM",
-        dxfattribs={"layer": "DIMS"}
-    ).render()
+    msp.add_diameter_dim(center=(cx, cy), mpoint=(cx - r_inner, cy),
+                         dimstyle="EZ_DIM", dxfattribs={"layer": "DIMS"}).render()
 
     if len(finger_radii) >= 1:
         first_r = finger_radii[0]
 
-        msp.add_linear_dim(
-            base=(cx, maxy + OFFSET + 10),
-            p1=(cx + r_outer, cy),
-            p2=(cx + first_r, cy),
-            dimstyle="EZ_DIM",
-            dxfattribs={"layer": "DIMS"}
-        ).render()
+        msp.add_linear_dim((cx, maxy + OFFSET + 10),
+                           (cx + r_outer, cy),
+                           (cx + first_r, cy),
+                           dimstyle="EZ_DIM",
+                           dxfattribs={"layer": "DIMS"}).render()
 
     if len(finger_radii) >= 2:
         r1 = finger_radii[0]
         r2 = finger_radii[1]
         inner_r1 = r1 - FINGER_THICKNESS
 
-        msp.add_linear_dim(
-            base=(cx, maxy + OFFSET),
-            p1=(cx + inner_r1, cy),
-            p2=(cx + r2, cy),
-            dimstyle="EZ_DIM",
-            dxfattribs={"layer": "DIMS"}
-        ).render()
+        msp.add_linear_dim((cx, maxy + OFFSET),
+                           (cx + inner_r1, cy),
+                           (cx + r2, cy),
+                           dimstyle="EZ_DIM",
+                           dxfattribs={"layer": "DIMS"}).render()
 
     if len(rings) > 1:
         cx2, cy2 = rings[1]["center"]
 
-        msp.add_linear_dim(
-            base=(cx, maxy + OFFSET + 20),
-            p1=(cx + r_outer, cy),
-            p2=(cx2 - r_outer, cy),
-            dimstyle="EZ_DIM",
-            dxfattribs={"layer": "DIMS"}
-        ).render()
+        msp.add_linear_dim((cx, maxy + OFFSET + 20),
+                           (cx + r_outer, cy),
+                           (cx2 - r_outer, cy),
+                           dimstyle="EZ_DIM",
+                           dxfattribs={"layer": "DIMS"}).render()
 
     if len(finger_radii) >= 1:
         r = finger_radii[0]
 
-        msp.add_linear_dim(
-            base=(cx, maxy + OFFSET + 40),
-            p1=(cx + r, cy),
-            p2=(cx + r - FINGER_THICKNESS, cy),
-            dimstyle="EZ_DIM",
-            dxfattribs={"layer": "DIMS"}
-        ).render()
+        msp.add_linear_dim((cx, maxy + OFFSET + 40),
+                           (cx + r, cy),
+                           (cx + r - FINGER_THICKNESS, cy),
+                           dimstyle="EZ_DIM",
+                           dxfattribs={"layer": "DIMS"}).render()
 
+
+# ================= CONSTANTS =================
 
 def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, actual_margin_x, actual_margin_y):
     text_x = maxx + 60
@@ -225,6 +268,7 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
     doc.layers.add("FINGER_BASE", color=7)
     doc.layers.add("FINGER_EMITTER", color=7)
     doc.layers.add("DIMS", color=3)
+    doc.layers.add("CONTACT_PAD", color=7)
 
     OFFSET = 25
     cut_angle = 30
@@ -232,20 +276,16 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
 
     minx, miny, maxx, maxy = boundary.bounds
 
-    # ===== WAFER =====
-    msp.add_lwpolyline(
-        [(minx, miny), (maxx, miny), (maxx, maxy),
-         (minx, maxy), (minx, miny)],
-        dxfattribs={"layer": "WAFER"}
-    )
+    # WAFER
+    msp.add_lwpolyline([(minx, miny), (maxx, miny), (maxx, maxy),
+                        (minx, maxy), (minx, miny)],
+                       dxfattribs={"layer": "WAFER"})
 
-    msp.add_linear_dim(
-        base=(minx, miny - OFFSET),
-        p1=(minx, miny),
-        p2=(maxx, miny),
-        dimstyle="EZ_DIM",
-        dxfattribs={"layer": "DIMS"}
-    ).render()
+    msp.add_linear_dim(base=(minx, miny - OFFSET),
+                       p1=(minx, miny),
+                       p2=(maxx, miny),
+                       dimstyle="EZ_DIM",
+                       dxfattribs={"layer": "DIMS"}).render()
 
     finger_radii = create_fingers(inner_diameter, outer_diameter)
 
