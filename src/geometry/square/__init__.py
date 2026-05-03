@@ -1,7 +1,8 @@
 import busbars
 import cells
-import fingers
 import contact_pads
+import dicing
+import fingers
 import wafer
 
 import ezdxf
@@ -35,7 +36,10 @@ contact_gap_y = 0.3
 contact_margin_x = 0.538
 contact_margin_y = 0.5
 
-def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, wafer):
+dicing_protrusion_x = 17.3
+dicing_protrusion_y = 6.85
+
+def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, wafer):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
@@ -48,6 +52,7 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contact
     doc.layers.add("CELLS",   color=5)
     doc.layers.add("WAFER",   color=1)
     doc.layers.add("CONTACT_PADS", color=2)
+    doc.layers.add("DICING", color=4)
 
     for r in rects:
         coords = list(r["geometry"].exterior.coords)
@@ -61,7 +66,10 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contact
         msp.add_lwpolyline(list(cell.exterior.coords), close=True, dxfattribs={"layer": "CELLS"})
 
     for c in contacts_rects:
-        msp.add_lwpolyline(list(c.exterior.coords), close=True, dxfattribs={"layer": "CONTACTS"})
+        msp.add_lwpolyline(list(c.exterior.coords), close=True, dxfattribs={"layer": "CONTACT_PADS"})
+
+    for start, end in dicing_rects:
+        msp.add_line(start, end, dxfattribs={"layer": "DICING"})
 
     msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
 
@@ -73,12 +81,14 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
                                              busbar_params: busbars.BusbarParams,
                                              cell_params: cells.CellParams,
                                              contact_pads_params: contact_pads.ContactParams,
+                                             dicing_params: dicing.DicingParams,
                                              wafer_params: wafer.WaferParams,
                                              origin=(0, 0)):
     all_rects    = []
     all_busbars  = []
     all_cells    = []
     all_contacts = []
+    dicing_lines = []
 
     block_w = (finger_block_params.amount * finger_block_params.w
                + (finger_block_params.amount - 1) * finger_block_params.d)
@@ -96,14 +106,15 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
                 cell_params
             )
             all_cells.append(cell)
+            dicing_lines.extend(dicing.generate_grid_lines(all_cells, dicing_params))
             all_contacts.extend(contact_pads.generate_contact_pads_for_cell(cell, contact_pads_params))
 
     wafer_rect = wafer.generate_wafer(all_cells, wafer_params)
 
-    return all_rects, all_busbars, all_cells, all_contacts, wafer_rect
+    return all_rects, all_busbars, all_cells, all_contacts, dicing_lines, wafer_rect
 
 
-rects, busbar_rects, cells_rects, contact_rects, wafer_rect = generate_finger_block_grid(
+rects, busbar_rects, cells_rects, contact_rects, dicing_rects, wafer_rect = generate_finger_block_grid(
     fingers.RowGridParams(finger_block_line_amount, finger_block_line_distance),
     fingers.FingerBlockRowParams(finger_block_amount_line, finger_block_distance),
     fingers.FingerBlockParams(finger_amount, finger_width, finger_height, finger_distance),
@@ -115,7 +126,8 @@ rects, busbar_rects, cells_rects, contact_rects, wafer_rect = generate_finger_bl
     contact_pads.ContactParams(contact_w, contact_h,
                                contact_gap_x, contact_gap_y,
                                contact_margin_x, contact_margin_y),
+    dicing.DicingParams(dicing_protrusion_x, dicing_protrusion_y),
     wafer.WaferParams(wafer_w_margin, wafer_h_margin, wafer_corner_w)
 )
 
-export_finger_block_dxf(rects, "square-cells-test", busbar_rects, cells_rects, contact_rects, wafer_rect)
+export_finger_block_dxf(rects, "square-cells-test", busbar_rects, cells_rects, contact_rects, dicing_rects, wafer_rect)
