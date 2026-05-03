@@ -1,6 +1,7 @@
 import busbars
 import cells
 import fingers
+import contact_pads
 import wafer
 
 import ezdxf
@@ -27,7 +28,14 @@ wafer_w_margin = 16.675
 wafer_h_margin = 6.225
 wafer_corner_w = 1.512
 
-def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, wafer):
+contact_w = 0.025
+contact_h = 0.15
+contact_gap_x = 0.525
+contact_gap_y = 0.3
+contact_margin_x = 0.538
+contact_margin_y = 0.5
+
+def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, wafer):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
@@ -39,6 +47,7 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, wafer):
     doc.layers.add("BUSBARS", color=3)
     doc.layers.add("CELLS",   color=5)
     doc.layers.add("WAFER",   color=1)
+    doc.layers.add("CONTACT_PADS", color=2)
 
     for r in rects:
         coords = list(r["geometry"].exterior.coords)
@@ -51,6 +60,9 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, wafer):
     for cell in cells_rects:
         msp.add_lwpolyline(list(cell.exterior.coords), close=True, dxfattribs={"layer": "CELLS"})
 
+    for c in contacts_rects:
+        msp.add_lwpolyline(list(c.exterior.coords), close=True, dxfattribs={"layer": "CONTACTS"})
+
     msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
 
     doc.saveas(f"../../../data/{filename}.dxf")
@@ -60,11 +72,13 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
                                              finger_block_params: fingers.FingerBlockParams,
                                              busbar_params: busbars.BusbarParams,
                                              cell_params: cells.CellParams,
+                                             contact_pads_params: contact_pads.ContactParams,
                                              wafer_params: wafer.WaferParams,
                                              origin=(0, 0)):
-    all_rects   = []
-    all_busbars = []
-    all_cells   = []
+    all_rects    = []
+    all_busbars  = []
+    all_cells    = []
+    all_contacts = []
 
     block_w = (finger_block_params.amount * finger_block_params.w
                + (finger_block_params.amount - 1) * finger_block_params.d)
@@ -77,17 +91,19 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
             all_busbars.extend(busbars.generate_busbars_for_block(
                 block_origin, block_w, finger_block_params.h, busbar_params
             ))
-            all_cells.append(cells.generate_cell_for_block(
+            cell = cells.generate_cell_for_block(
                 block_origin, block_w, finger_block_params.h,
                 cell_params
-            ))
+            )
+            all_cells.append(cell)
+            all_contacts.extend(contact_pads.generate_contact_pads_for_cell(cell, contact_pads_params))
 
     wafer_rect = wafer.generate_wafer(all_cells, wafer_params)
 
-    return all_rects, all_busbars, all_cells, wafer_rect
+    return all_rects, all_busbars, all_cells, all_contacts, wafer_rect
 
 
-rects, busbar_rects, cells_rects, wafer_rect = generate_finger_block_grid(
+rects, busbar_rects, cells_rects, contact_rects, wafer_rect = generate_finger_block_grid(
     fingers.RowGridParams(finger_block_line_amount, finger_block_line_distance),
     fingers.FingerBlockRowParams(finger_block_amount_line, finger_block_distance),
     fingers.FingerBlockParams(finger_amount, finger_width, finger_height, finger_distance),
@@ -96,7 +112,10 @@ rects, busbar_rects, cells_rects, wafer_rect = generate_finger_block_grid(
                          bottom_busbar_left_d, bottom_busbar_right_d,
                          top_busbar_protrusion_w, top_busbar_protrusion_h),
     cells.CellParams(cell_w_margin, cell_h_margin),
+    contact_pads.ContactParams(contact_w, contact_h,
+                               contact_gap_x, contact_gap_y,
+                               contact_margin_x, contact_margin_y),
     wafer.WaferParams(wafer_w_margin, wafer_h_margin, wafer_corner_w)
 )
 
-export_finger_block_dxf(rects, "square-fingers-test", busbar_rects, cells_rects, wafer_rect)
+export_finger_block_dxf(rects, "square-cells-test", busbar_rects, cells_rects, contact_rects, wafer_rect)
