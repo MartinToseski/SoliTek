@@ -11,4 +11,4 @@ if __name__ == '__main__':
     rings, actual_margin_x, actual_margin_y = generate_ring_layout(wafer1, INNER_DIAMETER, OUTER_DIAMETER, RING_SPACING, EDGE_MARGIN)
     print(f"Generated {len(rings)} rings")
 
-    export_dxf(wafer1, rings, INNER_DIAMETER, OUTER_DIAMETER, actual_margin_x, actual_margin_y, "irregular_rings_small")
+    export_dxf(wafer2, rings, INNER_DIAMETER, OUTER_DIAMETER, actual_margin_x, actual_margin_y, "irregular_rings_large")

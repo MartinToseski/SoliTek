@@ -48,15 +48,20 @@ def draw_contact_pad_from_geom(msp, merged, doc,
                                 skip_theta=None,
                                 skip_half_angle=0.0,
                                 ring_cx=None,
-                                ring_cy=None):
+                                ring_cy=None,
+                                skip_radial_walls=False,   # NEW
+                                max_radius=None):          # NEW
     """
-    reference_override : (x, y) used instead of polygon centroid for the
-                         inward-normal check.  Needed for the middle-curve
-                         bridge whose centroid sits on the wrong side of the
-                         bulging inner arc.
-    skip_theta / skip_half_angle / ring_cx / ring_cy :
-                         skip pads whose angle from ring_cx,ring_cy falls
-                         within (skip_theta ± skip_half_angle) degrees.
+    skip_radial_walls : when True (and ring_cx/cy are given), any segment whose
+                        tangent direction is within ~25° of the radial direction
+                        (dot-product > 0.9) is skipped.  This removes the short
+                        perpendicular side-wall segments of the middle bridge
+                        without touching arcs or the top outer edge.
+    max_radius        : when given (and ring_cx/cy are given), pads for points
+                        further than this radius from the ring centre are skipped.
+                        Used to restrict the separate middle-curve draw to its
+                        inner arc only (r ≤ r_inner_f), preventing duplicate pads
+                        on the outer top edge that merged_for_pads already covers.
     """
     global CONTACT_PAD_LAYER_COUNTER
 
@@ -64,8 +69,6 @@ def draw_contact_pad_from_geom(msp, merged, doc,
     half    = size / 2
     spacing = size * 4
 
-    # Safety: use only the largest polygon when unary_union fragments into a
-    # MultiPolygon so we never draw duplicate pad rows.
     all_geoms = list(getattr(merged, "geoms", [merged]))
     primary   = max(all_geoms, key=lambda g: g.area)
 
@@ -88,18 +91,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
             x,  y  = p.x,      p.y
             x2, y2 = p_next.x, p_next.y
 
-            # ---- angular skip -----------------------------------------------
+            # ---- angular skip ------------------------------------------
             if (skip_theta is not None
                     and ring_cx is not None
                     and skip_half_angle > 0):
                 pt_angle    = (math.degrees(
                     math.atan2(y - ring_cy, x - ring_cx)) + 360) % 360
                 skip_center = (skip_theta + 360) % 360
-                diff = (pt_angle - skip_center + 180) % 360 - 180  # in (−180, 180]
+                diff = (pt_angle - skip_center + 180) % 360 - 180
                 if abs(diff) <= skip_half_angle:
                     d += spacing
                     continue
-            # -----------------------------------------------------------------
+
+            # ---- radius ceiling (inner-arc-only draws) -----------------
+            if max_radius is not None and ring_cx is not None:
+                if math.hypot(x - ring_cx, y - ring_cy) > max_radius + 1e-6:
+                    d += spacing
+                    continue
 
             dx = x2 - x
             dy = y2 - y
@@ -112,10 +120,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
             ux = dx / l
             uy = dy / l
 
+            # ---- radial wall filter ------------------------------------
+            # Segments connecting the outer-ring level to the bridge top
+            # (pA_outer→outer_A and outer_B→pB_outer) run along the radial
+            # direction.  Detect them by their high dot-product with the
+            # outward radius vector and skip them.
+            if skip_radial_walls and ring_cx is not None:
+                r_pt = math.hypot(x - ring_cx, y - ring_cy)
+                if r_pt > 0:
+                    rdot = abs(ux * (x - ring_cx) / r_pt
+                               + uy * (y - ring_cy) / r_pt)
+                    if rdot > 0.9:
+                        d += spacing
+                        continue
+
             nx = -uy
             ny =  ux
 
-            # Reference point for the inside/outside test
             if reference_override is not None:
                 ref_x, ref_y = reference_override
             else:
@@ -311,7 +332,6 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
             # ============================================================
 
             # Keep original behaviour unchanged.
-            # These fingers already generate correct contact-pad geometry.
             draw_contact_pad_from_geom(msp, merged, doc)
 
         else:
@@ -320,15 +340,14 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
             # EMITTER fingers
             # ============================================================
 
-            # Tiny healing buffer.
+            # Geometry healing buffer.
             #
-            # The analytical bridge endpoints do not land exactly on the
-            # polygonized ring vertices produced by Point(...).buffer(...).
-            # That can fragment the union into tiny MultiPolygon pieces,
-            # producing duplicated near-parallel contact-pad rows.
+            # Ensures bridge/ring unions become one clean polygon so the
+            # exterior path follows:
             #
-            # The tiny outward/inward buffer forces all touching pieces to
-            # merge into one clean polygon while preserving geometry.
+            #   arc -> bridge walls -> middle bridge -> bridge walls -> arc
+            #
+            # without duplicate rows caused by fragmented MultiPolygons.
             MERGE_TOL = 1e-4
 
             merged_for_pads = (
@@ -344,39 +363,26 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
             if idx == len(finger_radii) - 2:
 
                 # --------------------------------------------------------
-                # Main pad path
+                # Main merged exterior pads
                 # --------------------------------------------------------
-                #
-                # This now correctly follows:
-                #
-                #   outer arc
-                #       ->
-                #   split bridge
-                #       ->
-                #   middle bridge
-                #       ->
-                #   split bridge
-                #       ->
-                #   outer arc
-                #
-                # while avoiding the duplicated emitter rows.
+
                 draw_contact_pad_from_geom(
                     msp,
                     merged_for_pads,
-                    doc
+                    doc,
+
+                    skip_radial_walls=True,
+
+                    ring_cx=cx,
+                    ring_cy=cy,
                 )
 
                 # --------------------------------------------------------
-                # Middle curved bridge pads
+                # Inner curved bridge pads
                 # --------------------------------------------------------
-                #
-                # The centroid of the middle bridge polygon is biased toward
-                # the outer rectangular bridge section, causing the normal
-                # direction test to occasionally flip outward.
-                #
-                # Use a guaranteed point inside the bridge instead so the
-                # pads always extend INTO the bridge geometry.
+
                 if middle_curve is not None:
+
                     bridge_ref = (
                         cx
                         + (r_outer_f + 6 * FINGER_THICKNESS)
@@ -391,7 +397,15 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                         msp,
                         middle_curve,
                         doc,
+
                         reference_override=bridge_ref,
+
+                        skip_radial_walls=True,
+
+                        max_radius=r_inner_f,
+
+                        ring_cx=cx,
+                        ring_cy=cy,
                     )
 
             # ============================================================
@@ -401,35 +415,32 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
             else:
 
                 # --------------------------------------------------------
-                # Bridge opening skip zone
+                # Outer emitter:
+                # arc -> split bridge -> gap -> split bridge -> arc
                 # --------------------------------------------------------
                 #
-                # The outer emitter arc naturally continues through the
-                # angular opening occupied by the INNER emitter bridge
-                # complex:
+                # merged_for_pads preserves the actual bridge chord
+                # geometry so pads correctly follow the straight split
+                # bridge sections instead of tracing a pure circular arc.
                 #
-                #   left_bridge
-                #       +
-                #   middle_curve
-                #       +
-                #   right_bridge
+                # The angular skip region removes pads only across the
+                # INNER emitter bridge opening itself:
                 #
-                # That causes pads to cross directly through the bridge
-                # geometry instead of stopping at the bridge walls.
+                #   left_bridge + middle_curve + right_bridge
                 #
-                # We therefore apply an angular skip region centered at
-                # theta whose width exactly matches the inner-emitter
-                # bridge opening.
+                # producing:
                 #
-                # This makes the pads:
+                #   arc
+                #     ->
+                #   split bridge chord
+                #     ->
+                #   gap
+                #     ->
+                #   split bridge chord
+                #     ->
+                #   arc
                 #
-                #   stop before first wall
-                #       ->
-                #   skip the bridge opening
-                #       ->
-                #   continue after second wall
-                #
-                # without altering any other geometry.
+                # without affecting any other geometry.
                 local_angle_2 = cut_angle * 0.67
 
                 # Half-angle from theta to each bridge wall.
@@ -445,6 +456,8 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
 
                     ring_cx=cx,
                     ring_cy=cy,
+
+                    skip_radial_walls=True,
                 )
 
 
