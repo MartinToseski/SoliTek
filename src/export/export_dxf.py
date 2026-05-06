@@ -370,12 +370,29 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                 # Middle curved bridge pads
                 # --------------------------------------------------------
                 #
-                # No separate middle-curve pad drawing.
+                # The centroid of the middle bridge polygon is biased toward
+                # the outer rectangular bridge section, causing the normal
+                # direction test to occasionally flip outward.
                 #
-                # merged_for_pads already correctly traces the bridge
-                # geometry itself. Removing the explicit middle_curve
-                # drawing prevents pads from appearing on the short
-                # side walls of the bridge section.
+                # Use a guaranteed point inside the bridge instead so the
+                # pads always extend INTO the bridge geometry.
+                if middle_curve is not None:
+                    bridge_ref = (
+                        cx
+                        + (r_outer_f + 6 * FINGER_THICKNESS)
+                        * math.cos(math.radians(theta)),
+
+                        cy
+                        + (r_outer_f + 6 * FINGER_THICKNESS)
+                        * math.sin(math.radians(theta)),
+                    )
+
+                    draw_contact_pad_from_geom(
+                        msp,
+                        middle_curve,
+                        doc,
+                        reference_override=bridge_ref,
+                    )
 
             # ============================================================
             # OUTER emitter
