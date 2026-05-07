@@ -1,6 +1,5 @@
 import math
 import ezdxf
-import geom
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
@@ -40,9 +39,6 @@ def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
 
 # ================= CONTACT PAD =================
 
-CONTACT_PAD_LAYER_COUNTER = 0
-
-
 def draw_contact_pad_from_geom(msp, merged, doc,
                                 reference_override=None,
                                 skip_theta=None,
@@ -63,7 +59,6 @@ def draw_contact_pad_from_geom(msp, merged, doc,
                         inner arc only (r ≤ r_inner_f), preventing duplicate pads
                         on the outer top edge that merged_for_pads already covers.
     """
-    global CONTACT_PAD_LAYER_COUNTER
 
     PAD_ALONG = PAD_LENGTH  # length along the finger path
     PAD_ACROSS = PAD_WIDTH  # width across the finger path
@@ -76,10 +71,10 @@ def draw_contact_pad_from_geom(msp, merged, doc,
 
     for geom in [primary]:
 
-        layer_name = f"CONTACT_PAD_{CONTACT_PAD_LAYER_COUNTER}"
+        layer_name = "CONTACT_PAD"
+
         if layer_name not in doc.layers:
             doc.layers.add(layer_name, color=7)
-        CONTACT_PAD_LAYER_COUNTER += 1
 
         line   = geom.exterior
         length = line.length
