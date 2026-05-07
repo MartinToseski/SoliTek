@@ -423,28 +423,41 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                 # geometry so pads correctly follow the straight split
                 # bridge sections instead of tracing a pure circular arc.
                 #
-                # The angular skip region removes pads only across the
-                # INNER emitter bridge opening itself:
+                # The middle bridge opening begins at:
                 #
-                #   left_bridge + middle_curve + right_bridge
+                #   pA_outer / pB_outer
                 #
-                # producing:
+                # not at:
                 #
-                #   arc
-                #     ->
-                #   split bridge chord
-                #     ->
-                #   gap
-                #     ->
-                #   split bridge chord
-                #     ->
-                #   arc
+                #   p1_outer / p2_outer
                 #
-                # without affecting any other geometry.
+                # split_bridge_segments(..., ratio=0.15) places:
+                #
+                #   pA_outer / pB_outer
+                #
+                # at:
+                #
+                #   theta ± 0.35 * local_angle_2
+                #
+                # Therefore:
+                #
+                #   skip_half = 0.35 * local_angle_2
+                #
+                # removes ONLY the actual middle bridge opening while
+                # allowing pads to continue much closer toward the
+                # bridge section boundaries.
+                #
+                # This removes the visible dead angular margin between:
+                #
+                #   split bridge pads
+                #       and
+                #   middle bridge opening
+                #
+                # without affecting any other geometry or pad logic.
                 local_angle_2 = cut_angle * 0.67
 
-                # Half-angle from theta to each bridge wall.
-                skip_half = local_angle_2 / 2
+                # Exact middle bridge opening half-span.
+                skip_half = 0.35 * local_angle_2
 
                 draw_contact_pad_from_geom(
                     msp,
