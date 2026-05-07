@@ -334,9 +334,48 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
             # ============================================================
             # BASE fingers
             # ============================================================
+            #
+            # Some BASE rings occasionally remain as fragmented MultiPolygons
+            # after unary_union(...).buffer(0). In those cases the exterior of
+            # the largest polygon incorrectly exposes the INNER cut arc:
+            #
+            #   outer arc
+            #       +
+            #   bridge
+            #       +
+            #   inner cut arc   <-- duplicate pad source
+            #
+            # producing a second near-parallel pad row offset inward by:
+            #
+            #   FINGER_THICKNESS
+            #
+            # The same tiny heal already used successfully for EMITTER fingers
+            # fixes this topology issue here as well.
+            #
+            # IMPORTANT:
+            # - draw_merged_geometry still uses the original `merged`
+            # - only the pad sampling geometry is healed
+            # - no geometry changes occur in the exported DXF itself
+            #
+            # This forces the ring + bridge into one clean polygon whose
+            # exterior contains only:
+            #
+            #   outer arc -> bridge -> outer arc
+            #
+            # eliminating the stray inner-arc duplicate pads.
+            MERGE_TOL = 1e-4
 
-            # Keep original behaviour unchanged.
-            draw_contact_pad_from_geom(msp, merged, doc)
+            merged_for_pads = (
+                merged
+                .buffer(MERGE_TOL)
+                .buffer(-MERGE_TOL)
+            )
+
+            draw_contact_pad_from_geom(
+                msp,
+                merged_for_pads,
+                doc
+            )
 
         else:
 
@@ -386,7 +425,6 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                 # --------------------------------------------------------
 
                 if middle_curve is not None:
-
                     bridge_ref = (
                         cx
                         + (r_outer_f + 6 * FINGER_THICKNESS)
