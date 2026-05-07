@@ -5,7 +5,7 @@ from shapely.geometry import Point
 from shapely.ops import unary_union
 
 from src.geometry.circular import create_fingers
-from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, PAD_WIDTH, PAD_GAP
 from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, create_middle_curve_bridge_exact
 from src.geometry.utils import get_group_center, get_theta, get_cut_angles
 
@@ -65,9 +65,11 @@ def draw_contact_pad_from_geom(msp, merged, doc,
     """
     global CONTACT_PAD_LAYER_COUNTER
 
-    size    = FINGER_THICKNESS
-    half    = size / 2
-    spacing = size * 4
+    PAD_ALONG = PAD_LENGTH  # length along the finger path
+    PAD_ACROSS = PAD_WIDTH  # width across the finger path
+    half_along = PAD_ALONG / 2  # 0.125 mm
+    half_across = PAD_ACROSS / 2  # 0.0075 mm
+    spacing = PAD_LENGTH + PAD_GAP
 
     all_geoms = list(getattr(merged, "geoms", [merged]))
     primary   = max(all_geoms, key=lambda g: g.area)
@@ -150,21 +152,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
                 nx = -nx
                 ny = -ny
 
-            px = x + nx * (FINGER_THICKNESS / 2)
-            py = y + ny * (FINGER_THICKNESS / 2)
+            px = x + nx * half_across
+            py = y + ny * half_across
 
             rot   = math.atan2(dy, dx)
             cos_r = math.cos(rot)
             sin_r = math.sin(rot)
 
-            square = []
-            for dx_, dy_ in [(-half, -half), ( half, -half),
-                              ( half,  half), (-half,  half), (-half, -half)]:
+            rect = []
+            for dx_, dy_ in [(-half_along, -half_across),
+                             (half_along, -half_across),
+                             (half_along, half_across),
+                             (-half_along, half_across),
+                             (-half_along, -half_across)]:
                 rx = px + dx_ * cos_r - dy_ * sin_r
                 ry = py + dx_ * sin_r + dy_ * cos_r
-                square.append((rx, ry))
-
-            msp.add_lwpolyline(square, dxfattribs={"layer": layer_name})
+                rect.append((rx, ry))
+            msp.add_lwpolyline(rect, dxfattribs={"layer": layer_name})
             d += spacing
 
 
