@@ -88,17 +88,6 @@ def create_middle_curve_bridge_exact(cx, cy, pA_outer, pB_outer, pA_inner, pB_in
     outer_A = (pA_outer[0] + nx * offset, pA_outer[1] + ny * offset)
     outer_B = (pB_outer[0] + nx * offset, pB_outer[1] + ny * offset)
 
-    '''
-    coords = []
-    coords.extend(inner_path)
-    coords.append(pB_inner)
-    coords.append(pB_outer)
-    coords.append(outer_B)
-    coords.append(outer_A)
-    coords.append(pA_outer)
-    coords.append(pA_inner)
-    '''
-
     coords = list(inner_path)
     coords.append(pB_outer)
     coords.append(outer_B)
