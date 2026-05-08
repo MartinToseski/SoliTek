@@ -623,6 +623,9 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
     cut_angle = 30
     pitch = outer_diameter + RING_SPACING
 
+    nx = len(set(r["center"][0] for r in rings))
+    ny = len(set(r["center"][1] for r in rings))
+
     minx, miny, maxx, maxy = boundary.bounds
 
     # WAFER
@@ -644,7 +647,19 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
         r_outer = outer_diameter / 2
         r_inner = inner_diameter / 2
 
-        gx, gy = get_group_center(cx, cy, pitch)
+        wafer_center_x = (minx + maxx) / 2
+        wafer_center_y = (miny + maxy) / 2
+
+        gx, gy = get_group_center(
+            cx,
+            cy,
+            pitch,
+            wafer_center_x,
+            wafer_center_y,
+            nx,
+            ny,
+        )
+
         theta = get_theta(cx, cy, gx, gy)
 
         draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle)
