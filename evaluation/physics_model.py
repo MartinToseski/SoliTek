@@ -86,7 +86,7 @@ class MaterialParams:
     """
     # BC ring technology
     Jsc_ring: float = 0.0574
-    J0_ring: float = 6.0e-14
+    J0_ring: float = 1.5e-13
     Rsh_ring: float = 109.0       # Ω per ring
     Umpp_Voc_ring: float = 0.858
 
@@ -106,6 +106,7 @@ class MaterialParams:
     # Full-size: measured Rs = 0.002 Ω at 288 fingers
     Rs_baseline_full: float = 0.002
     Rs_ref_fingers_full: int = 288
+    Rs_ref_busbars_full: int = 8
     # Exponent from 2xFinger data: 8F → 26.4% lower Rs
     Rs_alpha: float = 0.442
 
@@ -206,7 +207,31 @@ class SolarCellModel:
         is_ring = geo.shape == "ring"
         baseline = self.mat.Rs_baseline_ring if is_ring else self.mat.Rs_baseline_full
         n_ref = self.mat.Rs_ref_fingers_ring if is_ring else self.mat.Rs_ref_fingers_full
-        return baseline * (n_ref / max(geo.n_fingers, 1)) ** self.mat.Rs_alpha
+
+        n = max(geo.n_fingers, 1)
+
+        # Finger count scaling (existing)
+        Rs = baseline * (n_ref / n) ** self.mat.Rs_alpha
+
+        # Finger width correction (new)
+        # Wider fingers → lower resistance. The baseline was calibrated at 50µm.
+        # Finger resistance scales as 1/width, but fingers are only part of total Rs.
+        # Use a mild correction: 20% of Rs scales inversely with width.
+        width_ref = 50.0  # µm — the reference width in our measured data
+        width_ratio = width_ref / max(geo.finger_width_um, 10.0)
+        Rs = Rs * (0.80 + 0.20 * width_ratio)
+
+        # Busbar count correction (square cells only)
+        if geo.shape == "square" and geo.n_busbars > 0:
+            # More busbars → shorter finger path → lower finger resistance.
+            # Baseline calibrated at 8 busbars (full-size data).
+            # Finger resistance contribution scales as 1/n_busbars².
+            bb_ref = self.mat.Rs_ref_busbars_full  # add this to MaterialParams: 8
+            bb_ratio = (bb_ref / max(geo.n_busbars, 1)) ** 2
+            # Finger resistance is ~30% of total Rs in H-pattern cells
+            Rs = Rs * (0.70 + 0.30 * bb_ratio)
+
+        return Rs
 
     def _compute_FF(self, Voc, Isc, Rs, Rsh, Vt, rs_coeff):
         """Fill factor via Green's approximation with calibrated Rs coupling."""
