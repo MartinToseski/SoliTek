@@ -1,5 +1,7 @@
 from shapely.geometry import box
 
+from config.config import *
+
 import ablation
 import busbars
 import cells
@@ -11,52 +13,7 @@ import wafer
 
 import ezdxf
 
-finger_width = 0.04
-finger_height = 19.9
-finger_distance = 0.51
-finger_block_distance = 1.06
-finger_amount = 37
-finger_block_amount_line = 6
-finger_block_line_distance = 1
-finger_block_line_amount = 7
-
-top_busbar_top_d = bottom_busbar_bottom_d = 6.2
-top_busbar_left_d = top_busbar_right_d = 0.45
-bottom_busbar_left_d = bottom_busbar_right_d = -0.1
-top_busbar_protrusion_w = 1.2
-top_busbar_protrusion_h = 0.2
-
-cell_w_margin = 0.53
-cell_h_margin = 0.5
-
-wafer_w_margin = 16.675
-wafer_h_margin = 6.225
-wafer_corner_w = 1.512
-
-contact_w = 0.025
-contact_h = 0.15
-contact_gap_x = 0.525
-contact_gap_y = 0.3
-contact_margin_x = 0.538
-contact_margin_y = 0.5
-
-dicing_protrusion_x = 17.3
-dicing_protrusion_y = 6.85
-
-insulation_w = 0.5
-insulation_h = 0.7
-insulation_protrusion = 0.13
-insulation_h_margin = 0.15
-insulation_gap = 0.6
-insulation_inset = 0.35
-
-ablation_w        = 0.8
-ablation_h        = 20.3
-ablation_gap      = 0.3
-ablation_x_margin = 0.15
-ablation_wafer_margin = 1.0
-
-def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects, wafer):
+def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects, wafer):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
@@ -154,14 +111,14 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
     wafer_inner = wafer_rect.buffer(-ablation_params.wafer_margin)
 
     for i, cell in enumerate(all_cells):
-        row = i // finger_block_amount_line
+        row = i // sq_finger_block_amount_line
         base_rects = ablation.generate_ablation_with_wafer_margin(cell, wafer_rect, ablation_params)
         all_ablation.extend(base_rects)
         cy    = (cell.bounds[1] + cell.bounds[3]) / 2
         r_bot = cy - ablation_params.h / 2
         r_top = cy + ablation_params.h / 2
 
-        if row == finger_block_line_amount - 1:
+        if row == sq_finger_block_line_amount - 1:
             for r in base_rects:
                 clipped = box(r.bounds[0], r_top + ablation_params.gap * 2, r.bounds[2], r_top + ablation_params.gap * 2 + ablation_params.h).intersection(wafer_inner)
                 if not clipped.is_empty:
@@ -178,22 +135,22 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
 
 
 rects, busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects, ablation_rects, wafer_rect = generate_finger_block_grid(
-    fingers.RowGridParams(finger_block_line_amount, finger_block_line_distance),
-    fingers.FingerBlockRowParams(finger_block_amount_line, finger_block_distance),
-    fingers.FingerBlockParams(finger_amount, finger_width, finger_height, finger_distance),
-    busbars.BusbarParams(top_busbar_top_d, bottom_busbar_bottom_d,
-                         top_busbar_left_d, top_busbar_right_d,
-                         bottom_busbar_left_d, bottom_busbar_right_d,
-                         top_busbar_protrusion_w, top_busbar_protrusion_h),
-    cells.CellParams(cell_w_margin, cell_h_margin),
-    contact_pads.ContactParams(contact_w, contact_h,
-                               contact_gap_x, contact_gap_y,
-                               contact_margin_x, contact_margin_y),
-    dicing.DicingParams(dicing_protrusion_x, dicing_protrusion_y),
-    insulation.InsulationParams(insulation_w, insulation_h, insulation_protrusion,
-                                insulation_h_margin, insulation_gap, insulation_inset),
-    ablation.AblationParams(ablation_w, ablation_h, ablation_gap, ablation_x_margin, ablation_wafer_margin),
-    wafer.WaferParams(wafer_w_margin, wafer_h_margin, wafer_corner_w)
+    fingers.RowGridParams(sq_finger_block_line_amount, sq_finger_block_line_distance),
+    fingers.FingerBlockRowParams(sq_finger_block_amount_line, sq_finger_block_distance),
+    fingers.FingerBlockParams(sq_finger_amount, sq_finger_width, sq_finger_height, sq_finger_distance),
+    busbars.BusbarParams(sq_top_busbar_top_d, sq_bottom_busbar_bottom_d,
+                         sq_top_busbar_left_d, sq_top_busbar_right_d,
+                         sq_bottom_busbar_left_d, sq_bottom_busbar_right_d,
+                         sq_top_busbar_protrusion_w, sq_top_busbar_protrusion_h),
+    cells.CellParams(sq_cell_w_margin, sq_cell_h_margin),
+    contact_pads.ContactParams(sq_contact_w, sq_contact_h,
+                               sq_contact_gap_x, sq_contact_gap_y,
+                               sq_contact_margin_x, sq_contact_margin_y),
+    dicing.DicingParams(sq_dicing_protrusion_x, sq_dicing_protrusion_y),
+    insulation.InsulationParams(sq_insulation_w, sq_insulation_h, sq_insulation_protrusion,
+                                sq_insulation_h_margin, sq_insulation_gap, sq_insulation_inset),
+    ablation.AblationParams(sq_ablation_w, sq_ablation_h, sq_ablation_gap, sq_ablation_x_margin, sq_ablation_wafer_margin),
+    wafer.WaferParams(sq_wafer_w_margin, sq_wafer_h_margin, sq_wafer_corner_w)
 )
 
-export_finger_block_dxf(rects, "square-cells-test", busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects, wafer_rect)
+export_square_cell_dxf(rects, "square-cells-test", busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects, wafer_rect)
