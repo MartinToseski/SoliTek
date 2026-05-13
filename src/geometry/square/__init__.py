@@ -1,3 +1,6 @@
+from shapely.geometry import box
+
+import ablation
 import busbars
 import cells
 import contact_pads
@@ -47,6 +50,12 @@ insulation_h_margin = 0.15
 insulation_gap = 0.6
 insulation_inset = 0.35
 
+ablation_w        = 0.8
+ablation_h        = 20.3
+ablation_gap      = 0.3
+ablation_x_margin = 0.15
+ablation_wafer_margin = 1.0
+
 def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects, wafer):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
@@ -59,9 +68,10 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contact
     doc.layers.add("BUSBARS", color=3)
     doc.layers.add("CELLS",   color=5)
     doc.layers.add("WAFER",   color=1)
-    doc.layers.add("CONTACT_PADS", color=2)
-    doc.layers.add("DICING", color=4)
+    doc.layers.add("CONTACT_PADS", color=7)
+    doc.layers.add("DICING", color=30)
     doc.layers.add("INSULATION", color=2)
+    doc.layers.add("ABLATION", color=4)
 
     for r in rects:
         coords = list(r["geometry"].exterior.coords)
@@ -83,6 +93,10 @@ def export_finger_block_dxf(rects, filename, busbars_rects, cells_rects, contact
     for rect in insulation_rects:
         msp.add_lwpolyline(list(rect.exterior.coords), close=True, dxfattribs={"layer": "INSULATION"})
 
+    for rect in ablation_rects:
+        for g in getattr(rect, "geoms", [rect]):
+            msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "ABLATION"})
+    
     msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
 
     doc.saveas(f"../../../data/{filename}.dxf")
@@ -95,6 +109,7 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
                                              contact_pads_params: contact_pads.ContactParams,
                                              dicing_params: dicing.DicingParams,
                                              insulation_params: insulation.InsulationParams,
+                                             ablation_params: ablation.AblationParams,
                                              wafer_params: wafer.WaferParams,
                                              origin=(0, 0)):
     all_rects    = []
@@ -103,6 +118,7 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
     all_contacts = []
     dicing_lines = []
     all_insulation = []
+    all_ablation = []
 
     block_w = (finger_block_params.amount * finger_block_params.w
                + (finger_block_params.amount - 1) * finger_block_params.d)
@@ -128,11 +144,40 @@ def generate_finger_block_grid(row_grid_params: fingers.RowGridParams,
             all_contacts.extend(contact_pads.generate_contact_pads_for_cell(cell, contact_pads_params))
 
     wafer_rect = wafer.generate_wafer(all_cells, wafer_params)
+    for cell in all_cells:
+        all_ablation.extend(
+            ablation.generate_ablation_with_wafer_margin(
+                cell, wafer_rect, ablation_params
+            )
+        )
 
-    return all_rects, all_busbars, all_cells, all_contacts, dicing_lines, all_insulation, wafer_rect
+    wafer_inner = wafer_rect.buffer(-ablation_params.wafer_margin)
+
+    for i, cell in enumerate(all_cells):
+        row = i // finger_block_amount_line
+        base_rects = ablation.generate_ablation_with_wafer_margin(cell, wafer_rect, ablation_params)
+        all_ablation.extend(base_rects)
+        cy    = (cell.bounds[1] + cell.bounds[3]) / 2
+        r_bot = cy - ablation_params.h / 2
+        r_top = cy + ablation_params.h / 2
+
+        if row == finger_block_line_amount - 1:
+            for r in base_rects:
+                clipped = box(r.bounds[0], r_top + ablation_params.gap * 2, r.bounds[2], r_top + ablation_params.gap * 2 + ablation_params.h).intersection(wafer_inner)
+                if not clipped.is_empty:
+                    all_ablation.append(clipped)
+
+        if row == 0:
+            for r in base_rects:
+                clipped = box(r.bounds[0], r_bot - ablation_params.gap * 2 - ablation_params.h, r.bounds[2], r_bot - ablation_params.gap * 2).intersection(wafer_inner)
+                if not clipped.is_empty:
+                    all_ablation.append(clipped)
 
 
-rects, busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects, wafer_rect = generate_finger_block_grid(
+    return all_rects, all_busbars, all_cells, all_contacts, dicing_lines, all_insulation, all_ablation, wafer_rect
+
+
+rects, busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects, ablation_rects, wafer_rect = generate_finger_block_grid(
     fingers.RowGridParams(finger_block_line_amount, finger_block_line_distance),
     fingers.FingerBlockRowParams(finger_block_amount_line, finger_block_distance),
     fingers.FingerBlockParams(finger_amount, finger_width, finger_height, finger_distance),
@@ -147,6 +192,7 @@ rects, busbar_rects, cells_rects, contact_rects, dicing_rects, insulation_rects,
     dicing.DicingParams(dicing_protrusion_x, dicing_protrusion_y),
     insulation.InsulationParams(insulation_w, insulation_h, insulation_protrusion,
                                 insulation_h_margin, insulation_gap, insulation_inset),
+    ablation.AblationParams(ablation_w, ablation_h, ablation_gap, ablation_x_margin, ablation_wafer_margin),
     wafer.WaferParams(wafer_w_margin, wafer_h_margin, wafer_corner_w)
 )
 
