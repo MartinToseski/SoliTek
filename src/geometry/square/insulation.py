@@ -1,5 +1,5 @@
 from shapely.geometry import box
-import busbars
+from . import busbars
 import math
 
 

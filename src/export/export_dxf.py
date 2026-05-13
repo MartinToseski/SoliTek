@@ -676,3 +676,49 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
 
     doc.saveas(f"data/{filename}.dxf")
     print("DXF file saved!")
+
+def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects, ablation_rects, wafer):
+    doc = ezdxf.new()
+    doc.units = ezdxf.units.MM
+    msp = doc.modelspace()
+
+    doc.header["$LUNITS"] = 2
+    doc.header["$LUPREC"] = 4
+
+    doc.layers.add("FINGERS", color=1)
+    doc.layers.add("BUSBARS", color=3)
+    doc.layers.add("CELLS",   color=5)
+    doc.layers.add("WAFER",   color=1)
+    doc.layers.add("CONTACT_PADS", color=7)
+    doc.layers.add("DICING", color=30)
+    doc.layers.add("INSULATION", color=2)
+    doc.layers.add("ABLATION", color=4)
+
+    for r in rects:
+        coords = list(r["geometry"].exterior.coords)
+        msp.add_lwpolyline(coords, close=True, dxfattribs={"layer": "FINGERS"})
+
+    for geom in busbars_rects:
+        for g in getattr(geom, "geoms", [geom]):
+            msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "BUSBARS"})
+
+    for cell in cells_rects:
+        msp.add_lwpolyline(list(cell.exterior.coords), close=True, dxfattribs={"layer": "CELLS"})
+
+    for c in contacts_rects:
+        msp.add_lwpolyline(list(c.exterior.coords), close=True, dxfattribs={"layer": "CONTACT_PADS"})
+
+    for start, end in dicing_rects:
+        msp.add_line(start, end, dxfattribs={"layer": "DICING"})
+
+    for rect in insulation_rects:
+        msp.add_lwpolyline(list(rect.exterior.coords), close=True, dxfattribs={"layer": "INSULATION"})
+
+    for rect in ablation_rects:
+        for g in getattr(rect, "geoms", [rect]):
+            msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "ABLATION"})
+    
+    msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
+
+    doc.saveas(f"data/{filename}.dxf")
+    print("DXF file saved!")
