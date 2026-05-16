@@ -4,8 +4,10 @@ from shapely.geometry import Point
 from shapely.ops import unary_union
 
 from src.geometry.circular import create_fingers
-from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, PAD_WIDTH, PAD_GAP
-from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, create_middle_curve_bridge_exact
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, \
+    PAD_WIDTH, PAD_GAP
+from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, \
+    create_middle_curve_bridge_exact
 from src.geometry.utils import get_group_center, get_theta, get_cut_angles
 
 
@@ -40,13 +42,13 @@ def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
 # ================= CONTACT PAD =================
 
 def draw_contact_pad_from_geom(msp, merged, doc,
-                                reference_override=None,
-                                skip_theta=None,
-                                skip_half_angle=0.0,
-                                ring_cx=None,
-                                ring_cy=None,
-                                skip_radial_walls=False,   # NEW
-                                max_radius=None):          # NEW
+                               reference_override=None,
+                               skip_theta=None,
+                               skip_half_angle=0.0,
+                               ring_cx=None,
+                               ring_cy=None,
+                               skip_radial_walls=False,  # NEW
+                               max_radius=None):  # NEW
     """
     skip_radial_walls : when True (and ring_cx/cy are given), any segment whose
                         tangent direction is within ~25° of the radial direction
@@ -67,7 +69,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
     spacing = PAD_LENGTH + PAD_GAP
 
     all_geoms = list(getattr(merged, "geoms", [merged]))
-    primary   = max(all_geoms, key=lambda g: g.area)
+    primary = max(all_geoms, key=lambda g: g.area)
 
     for geom in [primary]:
 
@@ -76,23 +78,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
         if layer_name not in doc.layers:
             doc.layers.add(layer_name, color=7)
 
-        line   = geom.exterior
+        line = geom.exterior
         length = line.length
-        d      = 0
+        d = 0
 
         while d < length:
 
-            p      = line.interpolate(d)
+            p = line.interpolate(d)
             p_next = line.interpolate(min(d + 0.01, length))
 
-            x,  y  = p.x,      p.y
+            x, y = p.x, p.y
             x2, y2 = p_next.x, p_next.y
 
             # ---- angular skip ------------------------------------------
             if (skip_theta is not None
                     and ring_cx is not None
                     and skip_half_angle > 0):
-                pt_angle    = (math.degrees(
+                pt_angle = (math.degrees(
                     math.atan2(y - ring_cy, x - ring_cx)) + 360) % 360
                 skip_center = (skip_theta + 360) % 360
                 diff = (pt_angle - skip_center + 180) % 360 - 180
@@ -108,7 +110,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
 
             dx = x2 - x
             dy = y2 - y
-            l  = math.hypot(dx, dy)
+            l = math.hypot(dx, dy)
 
             if l == 0:
                 d += spacing
@@ -132,7 +134,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
                         continue
 
             nx = -uy
-            ny =  ux
+            ny = ux
 
             if reference_override is not None:
                 ref_x, ref_y = reference_override
@@ -150,7 +152,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
             px = x + nx * half_across
             py = y + ny * half_across
 
-            rot   = math.atan2(dy, dx)
+            rot = math.atan2(dy, dx)
             cos_r = math.cos(rot)
             sin_r = math.sin(rot)
 
@@ -171,7 +173,6 @@ def draw_contact_pad_from_geom(msp, merged, doc,
 
 def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                  theta, cut_angle, finger_radii):
-
     for idx, r in enumerate(finger_radii):
 
         # ============================================================
@@ -596,7 +597,6 @@ def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, 
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                actual_margin_x, actual_margin_y, filename):
-
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
 
@@ -673,6 +673,54 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
     draw_constants_panel(msp, minx, maxx, maxy,
                          outer_diameter, inner_diameter,
                          actual_margin_x, actual_margin_y)
+
+    doc.saveas(f"data/{filename}.dxf")
+    print("DXF file saved!")
+
+
+def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects,
+                           ablation_rects, wafer):
+    doc = ezdxf.new()
+    doc.units = ezdxf.units.MM
+    msp = doc.modelspace()
+
+    doc.header["$LUNITS"] = 2
+    doc.header["$LUPREC"] = 4
+
+    doc.layers.add("FINGERS", color=1)
+    doc.layers.add("BUSBARS", color=3)
+    doc.layers.add("CELLS", color=5)
+    doc.layers.add("WAFER", color=1)
+    doc.layers.add("CONTACT_PADS", color=7)
+    doc.layers.add("DICING", color=30)
+    doc.layers.add("INSULATION", color=2)
+    doc.layers.add("ABLATION", color=4)
+
+    for r in rects:
+        coords = list(r["geometry"].exterior.coords)
+        msp.add_lwpolyline(coords, close=True, dxfattribs={"layer": "FINGERS"})
+
+    for geom in busbars_rects:
+        for g in getattr(geom, "geoms", [geom]):
+            msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "BUSBARS"})
+
+    for cell in cells_rects:
+        msp.add_lwpolyline(list(cell.exterior.coords), close=True, dxfattribs={"layer": "CELLS"})
+
+    for c in contacts_rects:
+        msp.add_lwpolyline(list(c.exterior.coords), close=True, dxfattribs={"layer": "CONTACT_PADS"})
+
+    for start, end in dicing_rects:
+        msp.add_line(start, end, dxfattribs={"layer": "DICING"})
+
+    for rect in insulation_rects:
+        msp.add_lwpolyline(list(rect.exterior.coords), close=True, dxfattribs={"layer": "INSULATION"})
+
+    for rect in ablation_rects:
+        for g in getattr(rect, "geoms", [rect]):
+            msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "ABLATION"})
+
+    msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
 
     doc.saveas(f"data/{filename}.dxf")
     print("DXF file saved!")
