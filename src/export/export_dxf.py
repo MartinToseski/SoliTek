@@ -3,9 +3,11 @@ import ezdxf
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
-from src.geometry.circular import create_fingers
-from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, PAD_WIDTH, PAD_GAP
-from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, create_middle_curve_bridge_exact
+from src.geometry.circular import create_fingers, create_fingers_n
+from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, \
+    PAD_WIDTH, PAD_GAP
+from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, \
+    create_middle_curve_bridge_exact
 from src.geometry.utils import get_group_center, get_theta, get_cut_angles
 
 
@@ -40,13 +42,13 @@ def draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle):
 # ================= CONTACT PAD =================
 
 def draw_contact_pad_from_geom(msp, merged, doc,
-                                reference_override=None,
-                                skip_theta=None,
-                                skip_half_angle=0.0,
-                                ring_cx=None,
-                                ring_cy=None,
-                                skip_radial_walls=False,   # NEW
-                                max_radius=None):          # NEW
+                               reference_override=None,
+                               skip_theta=None,
+                               skip_half_angle=0.0,
+                               ring_cx=None,
+                               ring_cy=None,
+                               skip_radial_walls=False,  # NEW
+                               max_radius=None):  # NEW
     """
     skip_radial_walls : when True (and ring_cx/cy are given), any segment whose
                         tangent direction is within ~25° of the radial direction
@@ -67,7 +69,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
     spacing = PAD_LENGTH + PAD_GAP
 
     all_geoms = list(getattr(merged, "geoms", [merged]))
-    primary   = max(all_geoms, key=lambda g: g.area)
+    primary = max(all_geoms, key=lambda g: g.area)
 
     for geom in [primary]:
 
@@ -76,23 +78,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
         if layer_name not in doc.layers:
             doc.layers.add(layer_name, color=7)
 
-        line   = geom.exterior
+        line = geom.exterior
         length = line.length
-        d      = 0
+        d = 0
 
         while d < length:
 
-            p      = line.interpolate(d)
+            p = line.interpolate(d)
             p_next = line.interpolate(min(d + 0.01, length))
 
-            x,  y  = p.x,      p.y
+            x, y = p.x, p.y
             x2, y2 = p_next.x, p_next.y
 
             # ---- angular skip ------------------------------------------
             if (skip_theta is not None
                     and ring_cx is not None
                     and skip_half_angle > 0):
-                pt_angle    = (math.degrees(
+                pt_angle = (math.degrees(
                     math.atan2(y - ring_cy, x - ring_cx)) + 360) % 360
                 skip_center = (skip_theta + 360) % 360
                 diff = (pt_angle - skip_center + 180) % 360 - 180
@@ -108,7 +110,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
 
             dx = x2 - x
             dy = y2 - y
-            l  = math.hypot(dx, dy)
+            l = math.hypot(dx, dy)
 
             if l == 0:
                 d += spacing
@@ -132,7 +134,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
                         continue
 
             nx = -uy
-            ny =  ux
+            ny = ux
 
             if reference_override is not None:
                 ref_x, ref_y = reference_override
@@ -150,7 +152,7 @@ def draw_contact_pad_from_geom(msp, merged, doc,
             px = x + nx * half_across
             py = y + ny * half_across
 
-            rot   = math.atan2(dy, dx)
+            rot = math.atan2(dy, dx)
             cos_r = math.cos(rot)
             sin_r = math.sin(rot)
 
@@ -171,17 +173,23 @@ def draw_contact_pad_from_geom(msp, merged, doc,
 
 def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
                  theta, cut_angle, finger_radii):
-
     for idx, r in enumerate(finger_radii):
 
         # ============================================================
-        # Finger layer
+        # Finger layer — alternating polarity for interdigitated contacts
+        # For 4 fingers: 0=BASE, 1=EMITTER, 2=EMITTER, 3=BASE (original)
+        # For n fingers: alternate BASE/EMITTER (interdigitated)
         # ============================================================
 
-        if idx == 0 or idx == 3:
-            layer_name = "FINGER_BASE"
+        if len(finger_radii) == 4:
+            # Original behavior for standard 4-finger design
+            if idx == 0 or idx == 3:
+                layer_name = "FINGER_BASE"
+            else:
+                layer_name = "FINGER_EMITTER"
         else:
-            layer_name = "FINGER_EMITTER"
+            # Interdigitated pattern for any finger count
+            layer_name = "FINGER_BASE" if idx % 2 == 0 else "FINGER_EMITTER"
 
         r_outer_f = r
         r_inner_f = r - FINGER_THICKNESS
@@ -595,8 +603,7 @@ def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, 
 # ================= MAIN =================
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
-               actual_margin_x, actual_margin_y, filename):
-
+               actual_margin_x, actual_margin_y, filename, n_fingers=None):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
 
@@ -639,7 +646,10 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                        dimstyle="EZ_DIM",
                        dxfattribs={"layer": "DIMS"}).render()
 
-    finger_radii = create_fingers(inner_diameter, outer_diameter)
+    if n_fingers is not None:
+        finger_radii = create_fingers_n(inner_diameter, outer_diameter, n_fingers)
+    else:
+        finger_radii = create_fingers(inner_diameter, outer_diameter)
 
     for i, ring_data in enumerate(rings):
         cx, cy = ring_data["center"]
@@ -677,7 +687,9 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
     doc.saveas(f"data/{filename}.dxf")
     print("DXF file saved!")
 
-def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects, ablation_rects, wafer):
+
+def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts_rects, dicing_rects, insulation_rects,
+                           ablation_rects, wafer):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
@@ -687,8 +699,8 @@ def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts
 
     doc.layers.add("FINGERS", color=1)
     doc.layers.add("BUSBARS", color=3)
-    doc.layers.add("CELLS",   color=5)
-    doc.layers.add("WAFER",   color=1)
+    doc.layers.add("CELLS", color=5)
+    doc.layers.add("WAFER", color=1)
     doc.layers.add("CONTACT_PADS", color=7)
     doc.layers.add("DICING", color=30)
     doc.layers.add("INSULATION", color=2)
@@ -717,7 +729,7 @@ def export_square_cell_dxf(rects, filename, busbars_rects, cells_rects, contacts
     for rect in ablation_rects:
         for g in getattr(rect, "geoms", [rect]):
             msp.add_lwpolyline(list(g.exterior.coords), close=True, dxfattribs={"layer": "ABLATION"})
-    
+
     msp.add_lwpolyline(list(wafer.exterior.coords), close=True, dxfattribs={"layer": "WAFER"})
 
     doc.saveas(f"data/{filename}.dxf")
