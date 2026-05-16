@@ -1,6 +1,6 @@
 from shapely.geometry import box
 
-from config.config import *
+from src.config.config import *
 
 from . import ablation
 from . import busbars

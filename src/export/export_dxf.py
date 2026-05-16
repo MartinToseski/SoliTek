@@ -3,7 +3,7 @@ import ezdxf
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
-from src.geometry.circular import create_fingers
+from src.geometry.circular import create_fingers, create_fingers_n
 from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, \
     PAD_WIDTH, PAD_GAP
 from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, \
@@ -176,13 +176,20 @@ def draw_fingers(doc, msp, cx, cy, r_inner, r_outer,
     for idx, r in enumerate(finger_radii):
 
         # ============================================================
-        # Finger layer
+        # Finger layer — alternating polarity for interdigitated contacts
+        # For 4 fingers: 0=BASE, 1=EMITTER, 2=EMITTER, 3=BASE (original)
+        # For n fingers: alternate BASE/EMITTER (interdigitated)
         # ============================================================
 
-        if idx == 0 or idx == 3:
-            layer_name = "FINGER_BASE"
+        if len(finger_radii) == 4:
+            # Original behavior for standard 4-finger design
+            if idx == 0 or idx == 3:
+                layer_name = "FINGER_BASE"
+            else:
+                layer_name = "FINGER_EMITTER"
         else:
-            layer_name = "FINGER_EMITTER"
+            # Interdigitated pattern for any finger count
+            layer_name = "FINGER_BASE" if idx % 2 == 0 else "FINGER_EMITTER"
 
         r_outer_f = r
         r_inner_f = r - FINGER_THICKNESS
@@ -596,7 +603,7 @@ def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, 
 # ================= MAIN =================
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
-               actual_margin_x, actual_margin_y, filename):
+               actual_margin_x, actual_margin_y, filename, n_fingers=None):
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
 
@@ -639,7 +646,10 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                        dimstyle="EZ_DIM",
                        dxfattribs={"layer": "DIMS"}).render()
 
-    finger_radii = create_fingers(inner_diameter, outer_diameter)
+    if n_fingers is not None:
+        finger_radii = create_fingers_n(inner_diameter, outer_diameter, n_fingers)
+    else:
+        finger_radii = create_fingers(inner_diameter, outer_diameter)
 
     for i, ring_data in enumerate(rings):
         cx, cy = ring_data["center"]
