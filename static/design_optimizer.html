@@ -339,17 +339,13 @@
             <div class="section-label">Wafer</div>
             <div class="row2">
               <div class="field">
-                <label>wafer_size (mm)</label>
+                <label>Wafer size (mm)</label>
                 <input type="number" id="wafer_size" value="158.75" step="0.01">
               </div>
               <div class="field">
-                <label>wafer_size_large (mm)</label>
-                <input type="number" id="wafer_size_large" value="210" step="0.01">
+                <label>Edge margin (mm)</label>
+                <input type="number" id="edge_margin" value="2.1965" step="0.0001">
               </div>
-            </div>
-            <div class="field">
-              <label>edge_margin (mm)</label>
-              <input type="number" id="edge_margin" value="2.1965" step="0.0001">
             </div>
           </div>
 
@@ -358,16 +354,16 @@
             <div class="section-label">Ring geometry</div>
             <div class="row2">
               <div class="field">
-                <label>outer_diameter (mm)</label>
+                <label>Outer diameter (mm)</label>
                 <input type="number" id="outer_diameter" value="37.46" step="0.01">
               </div>
               <div class="field">
-                <label>inner_diameter (mm)</label>
+                <label>Inner diameter (mm)</label>
                 <input type="number" id="inner_diameter" value="33.26" step="0.01">
               </div>
             </div>
             <div class="field">
-              <label>ring_spacing (mm)</label>
+              <label>Ring spacing (mm)</label>
               <input type="number" id="ring_spacing" value="1.4905" step="0.0001">
             </div>
           </div>
@@ -377,21 +373,21 @@
             <div class="section-label">Fingers</div>
             <div class="row2">
               <div class="field">
-                <label>fingers_per_ring</label>
+                <label>Fingers per ring</label>
                 <input type="number" id="fingers_per_ring" value="4" min="1" step="1">
               </div>
               <div class="field">
-                <label>finger_thickness (mm)</label>
+                <label>Finger thickness (mm)</label>
                 <input type="number" id="finger_thickness" value="0.025" step="0.001">
               </div>
             </div>
             <div class="row2">
               <div class="field">
-                <label>finger_spacing (mm)</label>
+                <label>Finger spacing (mm)</label>
                 <input type="number" id="finger_spacing" value="0.4899" step="0.0001">
               </div>
               <div class="field">
-                <label>finger_to_ring (mm)</label>
+                <label>Finger distance from ring (mm)</label>
                 <input type="number" id="finger_to_ring" value="0.2576" step="0.0001">
               </div>
             </div>
@@ -402,16 +398,16 @@
             <div class="section-label">Pads</div>
             <div class="row2">
               <div class="field">
-                <label>pad_width (mm)</label>
+                <label>Pad width (mm)</label>
                 <input type="number" id="pad_width" value="0.025" step="0.001">
               </div>
               <div class="field">
-                <label>pad_length (mm)</label>
+                <label>Pad length (mm)</label>
                 <input type="number" id="pad_length" value="0.15" step="0.001">
               </div>
             </div>
             <div class="field">
-              <label>pad_gap (mm)</label>
+              <label>Pad gap (mm)</label>
               <input type="number" id="pad_gap" value="0.301" step="0.001">
             </div>
           </div>
@@ -425,7 +421,7 @@
           <div class="panel-section">
             <div class="section-label">Wafer</div>
             <div class="field">
-              <label>wafer_size (mm)</label>
+              <label>Wafer size (mm)</label>
               <input type="number" id="sq_wafer_size" value="158.75" step="0.01">
             </div>
           </div>
@@ -435,21 +431,21 @@
             <div class="section-label">Fingers</div>
             <div class="row2">
               <div class="field">
-                <label>finger_amount</label>
+                <label>Finger amount</label>
                 <input type="number" id="sq_finger_amount" value="37" min="1" step="1">
               </div>
               <div class="field">
-                <label>finger_width (mm)</label>
+                <label>Finger width (mm)</label>
                 <input type="number" id="sq_finger_width" value="0.04" step="0.001">
               </div>
             </div>
             <div class="row2">
               <div class="field">
-                <label>finger_distance (mm)</label>
+                <label>Finger distance (mm)</label>
                 <input type="number" id="sq_finger_distance" value="0.51" step="0.001">
               </div>
               <div class="field">
-                <label>finger_block_distance (mm)</label>
+                <label>Finger block distance (mm)</label>
                 <input type="number" id="sq_finger_block_distance" value="1.06" step="0.001">
               </div>
             </div>
@@ -460,21 +456,21 @@
             <div class="section-label">Contacts</div>
             <div class="row2">
               <div class="field">
-                <label>contact_w (mm)</label>
+                <label>Contact width (mm)</label>
                 <input type="number" id="sq_contact_w" value="0.025" step="0.001">
               </div>
               <div class="field">
-                <label>contact_h (mm)</label>
+                <label>Contact height (mm)</label>
                 <input type="number" id="sq_contact_h" value="0.15" step="0.001">
               </div>
             </div>
             <div class="row2">
               <div class="field">
-                <label>contact_gap_x (mm)</label>
+                <label>Contact horizontal gap (mm)</label>
                 <input type="number" id="sq_contact_gap_x" value="0.525" step="0.001">
               </div>
               <div class="field">
-                <label>contact_gap_y (mm)</label>
+                <label>Contact vertical gap (mm)</label>
                 <input type="number" id="sq_contact_gap_y" value="0.3" step="0.001">
               </div>
             </div>
@@ -486,7 +482,7 @@
         <div class="panel-section">
           <div class="section-label">Results</div>
           <div class="field">
-            <label>n_results</label>
+            <label>Results count</label>
             <input type="number" id="n_results" value="5" min="1" max="20" step="1">
           </div>
         </div>
@@ -543,7 +539,6 @@
     return {
       shape,
       wafer_size:       parseFloat(document.getElementById('wafer_size').value),
-      wafer_size_large: parseFloat(document.getElementById('wafer_size_large').value),
       edge_margin:      parseFloat(document.getElementById('edge_margin').value),
       outer_diameter:   parseFloat(document.getElementById('outer_diameter').value),
       inner_diameter:   parseFloat(document.getElementById('inner_diameter').value),

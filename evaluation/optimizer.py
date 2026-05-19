@@ -135,7 +135,7 @@ class DesignOptimizer:
                 contact_gap_x=sq_contact_gap_x,
                 contact_gap_y=sq_contact_gap_y,
             )
-            candidates = self._square_candidates(cell_width_mm, cell_height_mm, cond, sq_params)
+            candidates = self._square_candidates(cell_width_mm, cell_height_mm, n_cells, cond, sq_params)
 
         key = {
             "efficiency": lambda c: -c.prediction.NCell,
@@ -183,7 +183,7 @@ class DesignOptimizer:
                 ))
         return out
 
-    def _square_candidates(self, w, h, cond, sq_params):
+    def _square_candidates(self, w, h, n_cells, cond, sq_params):
         out = []
         base_fingers = sq_params["finger_amount"]
         finger_w     = sq_params["finger_width"]
@@ -208,10 +208,10 @@ class DesignOptimizer:
                 out.append(DesignResult(
                     geometry=geo,
                     prediction=pred,
-                    label=f"Square {nf}F / {nb}BB",
+                    label=f"Square {nf}F/{finger_w*1000:.0f}µm",
                     description=(
-                        f"{nf} fingers · pitch {pitch:.3f} mm · "
-                        f"width {finger_w*1000:.0f} µm · {nb} busbars"
+                        f"{nf} fingers, {finger_w*1000:.0f}µm width, "
+                        f"{n_cells} cells on wafer"
                     ),
                 ))
         return out
