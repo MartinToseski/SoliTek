@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from evaluation.physics_model import SolarCellModel, ring_geometry, fullsize_geometry, OperatingConditions
 from evaluation.measurements import get_n_rings, WAFER_SIZE
+from evaluation.ml_correction import HybridPredictor
 
 
 def load_data():

@@ -5,8 +5,10 @@ Sweeps over finger-count and width variations, returns ranked designs
 with trade-off explanations.
 """
 
+import os
 from dataclasses import dataclass
 from evaluation.physics_model import SolarCellModel, CellGeometry, CellPrediction, OperatingConditions
+from evaluation.ml_correction import HybridPredictor
 
 
 @dataclass
@@ -28,7 +30,14 @@ class DesignOptimizer:
     """
 
     def __init__(self, model=None):
-        self.model = model or SolarCellModel()
+        ml_path = "evaluation/ml_model.pkl"
+        if os.path.exists(ml_path):
+            predictor = HybridPredictor.load(ml_path)
+            print("Using hybrid physics+ML predictor")
+        else:
+            predictor = SolarCellModel()
+            print("Using physics-only predictor (no ML model found)")
+        self.model = model or predictor
 
     def search(
         self,
