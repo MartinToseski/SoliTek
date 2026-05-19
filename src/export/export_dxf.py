@@ -5,7 +5,7 @@ from shapely.ops import unary_union
 
 from src.geometry.circular import create_fingers, create_fingers_n
 from src.config.config import RING_SPACING, EDGE_MARGIN, FINGER_THICKNESS, FINGER_SPACING, FINGER_TO_RING, PAD_LENGTH, \
-    PAD_WIDTH, PAD_GAP
+    PAD_WIDTH, PAD_GAP, FINGERS_PER_RING
 from src.geometry.bridge import create_cut_sector, get_cut_endpoints, create_exact_bridge, split_bridge_segments, \
     create_middle_curve_bridge_exact
 from src.geometry.utils import get_group_center, get_theta, get_cut_angles
@@ -603,43 +603,45 @@ def draw_constants_panel(msp, minx, maxx, maxy, outer_diameter, inner_diameter, 
 # ================= MAIN =================
 
 def export_dxf(boundary, rings, inner_diameter, outer_diameter,
-               actual_margin_x, actual_margin_y, filename, n_fingers=None):
+               actual_margin_x, actual_margin_y, filename,
+               n_fingers=None,
+               fingers_per_ring=FINGERS_PER_RING,
+               finger_thickness=FINGER_THICKNESS,
+               finger_spacing=FINGER_SPACING,
+               finger_to_ring=FINGER_TO_RING,
+               pad_width=PAD_WIDTH,
+               pad_length=PAD_LENGTH,
+               pad_gap=PAD_GAP,
+               ring_spacing=RING_SPACING):
+
     doc = ezdxf.new()
     doc.units = ezdxf.units.MM
-
     doc.header["$LTSCALE"] = 1.0
     doc.header["$PSLTSCALE"] = 1
-
     msp = doc.modelspace()
-
     dimstyle = doc.dimstyles.new("EZ_DIM") if "EZ_DIM" not in doc.dimstyles else doc.dimstyles.get("EZ_DIM")
     dimstyle.dxf.dimdec = 4
     dimstyle.dxf.dimzin = 0
-
     if "DASHED" not in doc.linetypes:
         doc.linetypes.add("DASHED", pattern=[0.5, 0.25, -0.25])
-
-    doc.layers.add("WAFER", color=1, linetype="DASHED")
-    doc.layers.add("RINGS", color=1, linetype="DASHED")
-    doc.layers.add("FINGER_BASE", color=7)
+    doc.layers.add("WAFER",          color=1, linetype="DASHED")
+    doc.layers.add("RINGS",          color=1, linetype="DASHED")
+    doc.layers.add("FINGER_BASE",    color=7)
     doc.layers.add("FINGER_EMITTER", color=7)
-    doc.layers.add("DIMS", color=3)
-    doc.layers.add("CONTACT_PAD", color=7)
+    doc.layers.add("DIMS",           color=3)
+    doc.layers.add("CONTACT_PAD",    color=7)
 
     OFFSET = 25
     cut_angle = 30
-    pitch = outer_diameter + RING_SPACING
-
+    pitch = outer_diameter + ring_spacing
     nx = len(set(r["center"][0] for r in rings))
     ny = len(set(r["center"][1] for r in rings))
-
     minx, miny, maxx, maxy = boundary.bounds
 
     # WAFER
     msp.add_lwpolyline([(minx, miny), (maxx, miny), (maxx, maxy),
                         (minx, maxy), (minx, miny)],
                        dxfattribs={"layer": "WAFER"})
-
     msp.add_linear_dim(base=(minx, miny - OFFSET),
                        p1=(minx, miny),
                        p2=(maxx, miny),
@@ -647,34 +649,26 @@ def export_dxf(boundary, rings, inner_diameter, outer_diameter,
                        dxfattribs={"layer": "DIMS"}).render()
 
     if n_fingers is not None:
-        finger_radii = create_fingers_n(inner_diameter, outer_diameter, n_fingers)
+        finger_radii = create_fingers_n(
+            inner_diameter, outer_diameter, n_fingers,
+            finger_to_ring, finger_thickness
+        )
     else:
-        finger_radii = create_fingers(inner_diameter, outer_diameter)
+        finger_radii = create_fingers(
+            inner_diameter, outer_diameter,
+            finger_to_ring, finger_thickness, finger_spacing
+        )
 
     for i, ring_data in enumerate(rings):
         cx, cy = ring_data["center"]
-
         r_outer = outer_diameter / 2
         r_inner = inner_diameter / 2
-
         wafer_center_x = (minx + maxx) / 2
         wafer_center_y = (miny + maxy) / 2
-
-        gx, gy = get_group_center(
-            cx,
-            cy,
-            pitch,
-            wafer_center_x,
-            wafer_center_y,
-            nx,
-            ny,
-        )
-
-        theta = get_theta(cx, cy, gx, gy)
-
+        gx, gy = get_group_center(cx, cy, pitch, wafer_center_x, wafer_center_y, nx, ny)
+        theta  = get_theta(cx, cy, gx, gy)
         draw_rings(msp, cx, cy, r_outer, r_inner, theta, cut_angle)
         draw_fingers(doc, msp, cx, cy, r_inner, r_outer, theta, cut_angle, finger_radii)
-
         if i == 0:
             draw_dimensions(msp, cx, cy, r_outer, r_inner,
                             minx, miny, maxy, OFFSET,

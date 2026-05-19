@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Optimizer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --border: #e2e0d8;
+      --border-strong: #c8c5bb;
+      --text: #1a1916;
+      --text-muted: #6b6a65;
+      --text-faint: #9e9d97;
+      --accent: #2563eb;
+      --accent-bg: #eff4ff;
+      --success-bg: #f0faf4;
+      --success-text: #166534;
+      --success-border: #bbf7d0;
+      --tag-bg: #f0efea;
+      --recommended: #fefce8;
+      --recommended-border: #fde68a;
+      --recommended-text: #92400e;
+      --font: 'Georgia', serif;
+      --mono: 'Courier New', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: normal;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      font-family: sans-serif;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 680px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .panel-section {
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-family: sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.75rem;
+    }
+
+    .field { margin-bottom: 0.65rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.875rem;
+      font-family: var(--mono);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+    .toggle-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .toggle-group button {
+      flex: 1;
+      padding: 0.4rem;
+      font-size: 0.8rem;
+      font-family: sans-serif;
+      border: none;
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .toggle-group button.active {
+      background: var(--text);
+      color: #fff;
+    }
+
+    .run-btn {
+      width: 100%;
+      padding: 0.65rem;
+      font-family: var(--font);
+      font-size: 1rem;
+      border: 1px solid var(--text);
+      border-radius: 4px;
+      background: var(--text);
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+    }
+
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .results-area { position: relative; }
+
+    .placeholder {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-faint);
+      font-family: sans-serif;
+      font-size: 0.875rem;
+    }
+
+    .spinner {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+      font-family: sans-serif;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .spinner.active { display: block; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .spinner span { animation: pulse 1.4s ease-in-out infinite; }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .result-card.recommended {
+      background: var(--recommended);
+      border-color: var(--recommended-border);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-rank {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      min-width: 1.5rem;
+    }
+
+    .result-label {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+
+    .badge {
+      font-family: sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 3px;
+      background: var(--recommended-border);
+      color: var(--recommended-text);
+    }
+
+    .result-desc {
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .metric {
+      background: var(--tag-bg);
+      border-radius: 4px;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--text);
+      display: block;
+    }
+
+    .metric-key {
+      font-family: sans-serif;
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      display: block;
+      margin-top: 0.1rem;
+    }
+
+    .tradeoff {
+      font-family: sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      border-left: 2px solid var(--border-strong);
+      padding-left: 0.6rem;
+      line-height: 1.5;
+    }
+
+    .error-box {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      font-family: sans-serif;
+      font-size: 0.85rem;
+      color: #b91c1c;
+    }
+
+    @keyframes dxf-rotate { to { transform: rotate(360deg); } }
+    .dxf-spin {
+      display: inline-block;
+      width: 0.7rem; height: 0.7rem;
+      border: 1.5px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: dxf-rotate 0.7s linear infinite;
+      vertical-align: middle;
+    }
+
+    #results-list { display: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="layout">
+
+    <!-- ── LEFT: FORM ── -->
+    <form id="opt-form" onsubmit="runSearch(event)">
+      <div class="panel" style="margin-bottom:1rem">
+
+        <!-- Shape -->
+        <div class="panel-section">
+          <div class="section-label">Shape</div>
+          <div class="toggle-group">
+            <button type="button" id="btn-ring" class="active" onclick="setShape('ring')">Ring</button>
+            <button type="button" id="btn-square" onclick="setShape('square')">Square</button>
+          </div>
+          <input type="hidden" id="shape" value="ring">
+        </div>
+
+        <!-- ── RING FIELDS ── -->
+        <div id="ring-form-fields">
+
+          <!-- Wafer -->
+          <div class="panel-section">
+            <div class="section-label">Wafer</div>
+            <div class="row2">
+              <div class="field">
+                <label>wafer_size (mm)</label>
+                <input type="number" id="wafer_size" value="158.75" step="0.01">
+              </div>
+              <div class="field">
+                <label>wafer_size_large (mm)</label>
+                <input type="number" id="wafer_size_large" value="210" step="0.01">
+              </div>
+            </div>
+            <div class="field">
+              <label>edge_margin (mm)</label>
+              <input type="number" id="edge_margin" value="2.1965" step="0.0001">
+            </div>
+          </div>
+
+          <!-- Ring geometry -->
+          <div class="panel-section">
+            <div class="section-label">Ring geometry</div>
+            <div class="row2">
+              <div class="field">
+                <label>outer_diameter (mm)</label>
+                <input type="number" id="outer_diameter" value="37.46" step="0.01">
+              </div>
+              <div class="field">
+                <label>inner_diameter (mm)</label>
+                <input type="number" id="inner_diameter" value="33.26" step="0.01">
+              </div>
+            </div>
+            <div class="field">
+              <label>ring_spacing (mm)</label>
+              <input type="number" id="ring_spacing" value="1.4905" step="0.0001">
+            </div>
+          </div>
+
+          <!-- Fingers -->
+          <div class="panel-section">
+            <div class="section-label">Fingers</div>
+            <div class="row2">
+              <div class="field">
+                <label>fingers_per_ring</label>
+                <input type="number" id="fingers_per_ring" value="4" min="1" step="1">
+              </div>
+              <div class="field">
+                <label>finger_thickness (mm)</label>
+                <input type="number" id="finger_thickness" value="0.025" step="0.001">
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label>finger_spacing (mm)</label>
+                <input type="number" id="finger_spacing" value="0.4899" step="0.0001">
+              </div>
+              <div class="field">
+                <label>finger_to_ring (mm)</label>
+                <input type="number" id="finger_to_ring" value="0.2576" step="0.0001">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pads -->
+          <div class="panel-section">
+            <div class="section-label">Pads</div>
+            <div class="row2">
+              <div class="field">
+                <label>pad_width (mm)</label>
+                <input type="number" id="pad_width" value="0.025" step="0.001">
+              </div>
+              <div class="field">
+                <label>pad_length (mm)</label>
+                <input type="number" id="pad_length" value="0.15" step="0.001">
+              </div>
+            </div>
+            <div class="field">
+              <label>pad_gap (mm)</label>
+              <input type="number" id="pad_gap" value="0.301" step="0.001">
+            </div>
+          </div>
+
+        </div><!-- end #ring-form-fields -->
+
+        <!-- ── SQUARE FIELDS ── -->
+        <div id="square-form-fields" style="display:none">
+
+          <!-- Wafer -->
+          <div class="panel-section">
+            <div class="section-label">Wafer</div>
+            <div class="field">
+              <label>wafer_size (mm)</label>
+              <input type="number" id="sq_wafer_size" value="158.75" step="0.01">
+            </div>
+          </div>
+
+          <!-- Fingers -->
+          <div class="panel-section">
+            <div class="section-label">Fingers</div>
+            <div class="row2">
+              <div class="field">
+                <label>finger_amount</label>
+                <input type="number" id="sq_finger_amount" value="37" min="1" step="1">
+              </div>
+              <div class="field">
+                <label>finger_width (mm)</label>
+                <input type="number" id="sq_finger_width" value="0.04" step="0.001">
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label>finger_distance (mm)</label>
+                <input type="number" id="sq_finger_distance" value="0.51" step="0.001">
+              </div>
+              <div class="field">
+                <label>finger_block_distance (mm)</label>
+                <input type="number" id="sq_finger_block_distance" value="1.06" step="0.001">
+              </div>
+            </div>
+          </div>
+
+          <!-- Contacts -->
+          <div class="panel-section">
+            <div class="section-label">Contacts</div>
+            <div class="row2">
+              <div class="field">
+                <label>contact_w (mm)</label>
+                <input type="number" id="sq_contact_w" value="0.025" step="0.001">
+              </div>
+              <div class="field">
+                <label>contact_h (mm)</label>
+                <input type="number" id="sq_contact_h" value="0.15" step="0.001">
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label>contact_gap_x (mm)</label>
+                <input type="number" id="sq_contact_gap_x" value="0.525" step="0.001">
+              </div>
+              <div class="field">
+                <label>contact_gap_y (mm)</label>
+                <input type="number" id="sq_contact_gap_y" value="0.3" step="0.001">
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end #square-form-fields -->
+
+        <!-- Results + submit (shared) -->
+        <div class="panel-section">
+          <div class="section-label">Results</div>
+          <div class="field">
+            <label>n_results</label>
+            <input type="number" id="n_results" value="5" min="1" max="20" step="1">
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <button type="submit" class="run-btn" id="run-btn">Run search</button>
+        </div>
+
+      </div>
+    </form>
+
+    <!-- ── RIGHT: RESULTS ── -->
+    <div class="results-area">
+      <div class="placeholder" id="placeholder">
+        Results will appear here after running the search.
+      </div>
+
+      <div class="spinner" id="spinner">
+        <span>Searching designs…</span>
+      </div>
+
+      <div id="results-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setShape(s) {
+    document.getElementById('shape').value = s;
+    document.getElementById('btn-ring').classList.toggle('active',   s === 'ring');
+    document.getElementById('btn-square').classList.toggle('active', s === 'square');
+    document.getElementById('ring-form-fields').style.display   = s === 'ring'   ? '' : 'none';
+    document.getElementById('square-form-fields').style.display = s === 'square' ? '' : 'none';
+  }
+
+  function getParams() {
+    const shape = document.getElementById('shape').value;
+    if (shape === 'square') {
+      return {
+        shape,
+        wafer_size:               parseFloat(document.getElementById('sq_wafer_size').value),
+        sq_finger_amount:         parseInt(document.getElementById('sq_finger_amount').value),
+        sq_finger_width:          parseFloat(document.getElementById('sq_finger_width').value),
+        sq_finger_distance:       parseFloat(document.getElementById('sq_finger_distance').value),
+        sq_finger_block_distance: parseFloat(document.getElementById('sq_finger_block_distance').value),
+        sq_contact_w:             parseFloat(document.getElementById('sq_contact_w').value),
+        sq_contact_h:             parseFloat(document.getElementById('sq_contact_h').value),
+        sq_contact_gap_x:         parseFloat(document.getElementById('sq_contact_gap_x').value),
+        sq_contact_gap_y:         parseFloat(document.getElementById('sq_contact_gap_y').value),
+        n_results:                parseInt(document.getElementById('n_results').value),
+      };
+    }
+    return {
+      shape,
+      wafer_size:       parseFloat(document.getElementById('wafer_size').value),
+      wafer_size_large: parseFloat(document.getElementById('wafer_size_large').value),
+      edge_margin:      parseFloat(document.getElementById('edge_margin').value),
+      outer_diameter:   parseFloat(document.getElementById('outer_diameter').value),
+      inner_diameter:   parseFloat(document.getElementById('inner_diameter').value),
+      ring_spacing:     parseFloat(document.getElementById('ring_spacing').value),
+      fingers_per_ring: parseInt(document.getElementById('fingers_per_ring').value),
+      finger_thickness: parseFloat(document.getElementById('finger_thickness').value),
+      finger_spacing:   parseFloat(document.getElementById('finger_spacing').value),
+      finger_to_ring:   parseFloat(document.getElementById('finger_to_ring').value),
+      pad_width:        parseFloat(document.getElementById('pad_width').value),
+      pad_length:       parseFloat(document.getElementById('pad_length').value),
+      pad_gap:          parseFloat(document.getElementById('pad_gap').value),
+      n_results:        parseInt(document.getElementById('n_results').value),
+    };
+  }
+
+  function fmt(n, dec = 4) {
+    return (typeof n === 'number') ? n.toFixed(dec) : '-';
+  }
+
+  function renderResults(results) {
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+
+    results.forEach((r, i) => {
+      const p = r.prediction;
+      const card = document.createElement('div');
+      card.className = 'result-card';
+
+      card.innerHTML = `
+        <div class="result-header">
+          <span class="result-rank">#${i + 1}</span>
+          <span class="result-label">${r.label}</span>
+          ${r.is_recommended || true ? `
+            <div style="margin-top:0.75rem; display:flex; gap:0.5rem">
+              <button data-fingers="${r.geometry.n_fingers}" onclick="generateDxf(${r.geometry.n_fingers}, this)"
+                style="font-family:sans-serif;font-size:0.78rem;padding:0.35rem 0.75rem;border:1px solid var(--border-strong);border-radius:4px;background:var(--surface);cursor:pointer">
+                Download schema
+              </button>
+            </div>` : ''}
+        </div>
+        <div class="result-desc">${r.description}</div>
+        <div class="metrics">
+          <div class="metric">
+            <span class="metric-val">${fmt(p.NCell * 100, 2)}%</span>
+            <span class="metric-key">efficiency</span>
+          </div>
+          <div class="metric">
+            <span class="metric-val">${fmt(p.Pmpp, 3)} W</span>
+            <span class="metric-key">P<sub>mpp</sub></span>
+          </div>
+          <div class="metric">
+            <span class="metric-val">${fmt(p.Rs, 4)} Ω</span>
+            <span class="metric-key">R<sub>s</sub></span>
+          </div>
+          <div class="metric">
+            <span class="metric-val">${fmt(p.FF, 1)}%</span>
+            <span class="metric-key">FF</span>
+          </div>
+        </div>
+        ${r.tradeoff ? `<div class="tradeoff">${r.tradeoff}</div>` : ''}
+      `;
+
+      list.appendChild(card);
+    });
+
+    list.style.display = 'block';
+  }
+
+  async function runSearch(e) {
+    e.preventDefault();
+    const params = getParams();
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('results-list').style.display = 'none';
+    document.getElementById('spinner').classList.add('active');
+    document.getElementById('run-btn').disabled = true;
+    try {
+      const resp = await fetch('/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: resp.statusText }));
+        throw new Error(err.error || resp.statusText);
+      }
+      const results = await resp.json();
+      renderResults(results);
+    } catch (err) {
+      const list = document.getElementById('results-list');
+      list.innerHTML = `<div class="error-box">Error: ${err.message}</div>`;
+      list.style.display = 'block';
+    } finally {
+      document.getElementById('spinner').classList.remove('active');
+      document.getElementById('run-btn').disabled = false;
+    }
+  }
+
+  async function generateDxf(nFingers, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="dxf-spin"></span> Generating…';
+    try {
+      const params = getParams();
+      const resp = await fetch('/generate-dxf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...params, n_fingers: nFingers }),
+      });
+      if (!resp.ok) { alert('DXF generation failed: ' + await resp.text()); return; }
+      const blob = await resp.blob();
+      const shape = params.shape;
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(blob),
+        download: shape === 'square' ? `square_${nFingers}f.dxf` : `ring_${nFingers}f.dxf`
+      });
+      a.click();
+    } catch (err) {
+      alert('DXF generation failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Download schema';
+    }
+  }
+</script>
+</body>
+</html>
